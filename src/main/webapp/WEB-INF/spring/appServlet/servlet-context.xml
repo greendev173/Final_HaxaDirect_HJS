@@ -65,6 +65,8 @@
 		<interceptor>
 			<mapping path="/student/*"/>
 			<mapping path="/prof/*"/>
+			<mapping path="/professor/*"/>
+			<mapping path="*.hd"/>
 			<mapping path="*.do"/>
 			<exclude-mapping path="/"/>
 			<beans:bean class="com.kh.finalProject.common.interceptor.LoginCheck"/>

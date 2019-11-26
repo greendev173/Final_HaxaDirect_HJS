@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>KH 대학교</title>
+<title>KH대학교</title>
 </head>
 <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap" rel="stylesheet">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -26,32 +26,31 @@
 $(function(){
    var emparr="";
    $(".login_stu").click(function(){
-      $(".login_stu").removeClass(".hvr-bounce-to-right");
-      $(".login_stu").css("backgroundColor","rgba(91,192,222)");
-      $(".login_pro").css("backgroundColor","rgba(91,192,222,0.7)");
-      $(".login_emp").css("backgroundColor","rgba(91,192,222,0.7)");
+      $(".login_stu").css("backgroundColor","rgba(34,174,216)");
+      $(".login_pro").css("backgroundColor","rgba(222,99,91,0.5)");
+      $(".login_emp").css("backgroundColor","rgba(49,196,26,0.5)");
       $.ajax({
           success:function(){
           emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
-          emparr+="<input type='hidden' name='loginNo'value='s'/>"
+          emparr+="<input type='hidden' name='loginNo' value='s'/>"
           emparr+="<input type='text' name='loginId' placeholder='학번을 입력해주세요' class='form-control input-md'>";
           emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
           emparr+="<div class='spacing'>";
-          emparr+="<span><a href='#' onclick='idSearchModal();'>학번 찾기</a></span> / ";
-          emparr+="<span><a href='#' onclick='pwSearchModal();'>비밀번호 찾기</a></span><br/></div>";
-          emparr+="<label><input type='checkbox' name='idSave' /><small>아이디 저장</small></label>";
-          emparr+="<input type='submit' class='btn btn-info btn-sm pull-right' value='로그인'>";
-          emparr+="<button type='button' id='enrollBtn' class='btn btn-info btn-sm pull-right adm_btn'>입학신청</button></form>"
+          emparr+="<span><a href='#' onclick='idSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>학번 찾기</a></span> / ";
+          emparr+="<span><a href='#' onclick='pwSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>비밀번호 찾기</a></span><br/></div>";
+          emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
+          emparr+="<input type='submit' class='btn btn-info btn-sm pull-right' style='font-weight:bold;' value='로그인'>";
+          emparr+="<button type='button' id='enrollBtn' class='btn btn-info btn-sm pull-right adm_btn' style='font-weight:bold;'>입학신청</button></form>"
          $(".panel-heading").html("<h3 class='panel-title'>학생 로그인</h3>");
+          $("#panel-heading").css("backgroundColor", "rgba(34,174,216)");
           $(".col-md-7").html(emparr);
           }
       });
    });
    $(".login_pro").click(function(){
-      $(".login_pro").removeClass(".hvr-bounce-to-right");
-      $(".login_pro").css("backgroundColor","rgba(91,192,222)");
+      $(".login_pro").css("backgroundColor","rgba(222,99,91)");
       $(".login_stu").css("backgroundColor","rgba(91,192,222,0.7)");
-      $(".login_emp").css("backgroundColor","rgba(91,192,222,0.7)");
+      $(".login_emp").css("backgroundColor","rgba(49,196,26,0.5)");
       $.ajax({
           success:function(){
           emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
@@ -59,19 +58,24 @@ $(function(){
           emparr+="<input type='text' name='loginId' placeholder='사번을 입력해주세요' class='form-control input-md'>";
           emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
           emparr+="<div class='spacing'>";
-          emparr+="<span><a href='#' onclick='empIdSearchModal();'>사번 찾기 </a></span><br/></div>";
-          emparr+="<label><input type='checkbox' name='idSave' /><small>아이디 저장</small></label>";
-          emparr+="<input type='submit' class='btn btn-info btn-sm pull-right' value='로그인'></form>";
-         $(".panel-heading").html("<h3 class='panel-title'>교수 로그인</h3>");
+          emparr+="<span><a href='#' onclick='empIdSearchModal();' style='color:rgba(222,99,91); font-weight:bold;'>교번 찾기 </a></span><br/></div>";
+          emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
+          emparr+="<input id='loginProf' type='submit' class='btn btn-info_prof btn-sm pull-right' style='font-weight:bold;' value='로그인'></form>";
+         $("#panel-heading").html("<h3 class='panel-title'>교수 로그인</h3>");
+         $("#panel-heading").css("backgroundColor", "rgba(222,99,91)");
+         $("#empIdSearchclose").next().html("교번 찾기").css("color", "rgba(222,99,91)");
+         $("#empSendBtn").removeClass("btn-info_emp");
+         $("#empSendBtn").addClass("btn-info_prof");
+         $("#empIdSearchclose1").removeClass("btn-info_emp");
+         $("#empIdSearchclose1").addClass("btn-info_prof");
           $(".col-md-7").html(emparr);
           }
       });
    });
    $(".login_emp").click(function(){
-      $(".login_emp").removeClass(".hvr-bounce-to-right");
-      $(".login_emp").css("backgroundColor","rgba(91,192,222)");
+      $(".login_emp").css("backgroundColor","rgba(49,196,26)");
       $(".login_stu").css("backgroundColor","rgba(91,192,222,0.7)");
-      $(".login_pro").css("backgroundColor","rgba(91,192,222,0.7)");
+      $(".login_pro").css("backgroundColor","rgba(222,99,91,0.7)");
       $.ajax({
           success:function(){
           emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
@@ -79,10 +83,16 @@ $(function(){
           emparr+="<input type='text' name='loginId' placeholder='사번을 입력해주세요' class='form-control input-md'>";
           emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
           emparr+="<div class='spacing'>";
-          emparr+="<span><a href='#' onclick='empIdSearchModal();'>사번 찾기 </a></span><br/></div>";
-          emparr+="<label><input type='checkbox' name='idSave' /><small>아이디 저장</small></label>";
-          emparr+="<input type='submit' class='btn btn-info btn-sm pull-right' value='로그인'></form>";
+          emparr+="<span><a href='#' onclick='empIdSearchModal();' style='color:rgba(49,196,26); font-weight:bold;'>사번 찾기 </a></span><br/></div>";
+          emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
+          emparr+="<input type='submit' class='btn btn-info_emp btn-sm pull-right' style='font-weight:bold;' value='로그인'></form>";
          $(".panel-heading").html("<h3 class='panel-title'>교직원 로그인</h3>");
+         $("#panel-heading").css("backgroundColor", "rgba(49,196,26)");
+         $("#empIdSearchclose").next().html("사번 찾기").css("color", "rgba(49,196,26)");
+         $("#empSendBtn").removeClass("btn-info_prof");
+         $("#empSendBtn").addClass("btn-info_emp");
+         $("#empIdSearchclose1").removeClass("btn-info_prof");
+         $("#empIdSearchclose1").addClass("btn-info_emp");
           $(".col-md-7").html(emparr);
           }
       });
@@ -93,6 +103,9 @@ $(function(){
 </script>
 
 <style>
+	/* div {
+		border:1px solid black;	
+	} */
    .modal{
       display: none;
       position : fixed;
@@ -127,31 +140,40 @@ $(function(){
             text-decoration: none;
             cursor: pointer;
         }
+        
+        .btn-info_stu {
+        	color: #fff;
+		    background-color: #22aed8;
+		    border-color: #46b8da;
+        }
       
    
 </style>
 
 <body>
    <div class="middlePage">
+   	  <%-- <div class="page-haeder" style="text-align:center;">
+   	   <img width="70%" src="${path }/resources/images/image/khlogo.jpg">
+   	  </div> --%>
       <div class="page-header">
-         <h3 class="logo">
-            안녕하세요 KH대학교 종합정보 시스템입니다.
+         <h3 class="logo" style="font-weight:bold;">
+            	안녕하세요 KH대학교 종합정보 시스템입니다.
          </h3>
       </div>
       <div class="panel panel-info">
-         <div class="panel-heading">
+         <div id="panel-heading" class="panel-heading" style="background-color:rgba(34,174,216);">
             <h3 class="panel-title">학생 로그인</h3>
          </div>
          <div class="panel-body" id="12">
             <div class="row">
                <div class="col-md-5">
-                  <div class="login_stu hvr-bounce-to-right">
+                  <div id="login_stu" class="login_stu hvr-bounce-to-right_stu">
                      <p>학생</p>
                   </div>
-                  <div class="login_pro hvr-bounce-to-right">
+                  <div id="login_prof" class="login_pro hvr-bounce-to-right_prof">
                      <p>교수</p>
                   </div>
-                  <div class="login_emp hvr-bounce-to-right">
+                  <div id="login_emp" class="login_emp hvr-bounce-to-right_emp">
                      <p>교직원</p>
                   </div>
                </div>
@@ -162,16 +184,16 @@ $(function(){
                      <input type="text" name="loginId" placeholder="학번을 입력해주세요" class="form-control input-md">
                      <input type="password" name="loginPwd" placeholder="비밀번호를 입력해주세요" class="form-control input-md input_pwd">
                      <div class="spacing">
-                        <span><a href="#" id="idSearchBtn" onclick='idSearchModal();'>학번 찾기</a></span> /
-                        <span><a href="#" id="pwSearchBtn" onclick="pwSearchModal();">비밀번호 찾기</a></span>
+                        <span><a href="#" id="idSearchBtn" onclick='idSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>학번 찾기</a></span> /
+                        <span><a href="#" id="pwSearchBtn" onclick="pwSearchModal();" style='color:rgba(34,174,216); font-weight:bold;'>비밀번호 찾기</a></span>
                          <br />
                      </div>
                      <label>
                         <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1" /> 
                         <small>아이디 저장</small>
                      </label>
-                     <input type="submit" class="btn btn-info btn-sm pull-right" value="로그인"/>
-                     <button type="button" id="adm_btn" class="btn btn-info btn-sm pull-right adm_btn" onclick="enrollStudent();">입학신청</button>
+                     <input type="submit" class="btn btn-info btn-sm pull-right" style="font-weight:bold;" value="로그인"/>
+                     <button type="button" id="adm_btn" class="btn btn-info btn-sm pull-right adm_btn" style="font-weight:bold;" onclick="enrollStudent();">입학신청</button>
                   </form>
                </div>
             </div>
@@ -250,15 +272,15 @@ $(function(){
             <div class="modal-content" style="width:400px;">
                <form action="${path }/stuIdSearch.hd">
                      <span class="close" id="idSearchclose">&times;</span>
-                     <p>학번 찾기</p>
+                     <p style="font-weight:bold; color:rgba(34,174,216);">학번 찾기</p>
                      <div class="form-group"><br/>
                      <input type="hidden" name="loginNo" value="s"/>
                      <input type="text" id="reqTitle" name="stuName" placeholder="이름을 입력해주세요" class="form-control" autocomplete="off"/><br/>
                      <input type="text" id="reqTitle" name="stuEmail" placeholder="등록된 이메일을 입력해주세요" class="form-control" autocomplete="off"/><br/>
                      <input type="hidden" value="s" />
                      </div>
-                     <input type="button" class="btn btn-info btn-sm pull-right" id="idSearchclose1" value="취소" style="float: right; margin: 7px;">
-                     <input type="submit" class="btn btn-info btn-sm pull-right" value="전송" style="float: right; margin: 7px;">
+                     <input type="button" class="btn btn-info btn-sm pull-right" id="idSearchclose1" value="취소" style="float: right; margin: 7px; font-weight:bold;">
+                     <input type="submit" class="btn btn-info btn-sm pull-right" value="전송" style="float: right; margin: 7px; font-weight:bold;">
                      <br>
                      <br>
                </form>   
@@ -269,7 +291,7 @@ $(function(){
             <div class="modal-content" style="width:400px;">
               <form>
                      <span class="close" id="pwSearchclose">&times;</span>
-                     <p>비밀번호 찾기</p>
+                     <p style="font-weight:bold; color:rgba(34,174,216);">비밀번호 찾기</p>
                      <div class="form-group pwUpDiv"><br/>
                      <input type="hidden" name="loginNo" id="loginNo" value="s"/>
                      <input type="hidden" id="pwRandom" name="pwRandom" value=""/>
@@ -278,7 +300,7 @@ $(function(){
                      </div>
                      <div id="pwP">
                      </div>
-                     <input type="button" class="btn btn-info btn-sm pull-right" id="pwSearchclose1" value="취소" style="float: right; margin: 7px;">
+                     <input type="button" class="btn btn-info btn-sm pull-right" id="pwSearchclose1" value="취소" style="float: right; margin: 7px; font-weight:bold;">
                      <div id="pwDiv">
                      <!-- <input type="submit" class="btn btn-inverse-info btn-fw" value="인증번호 발송" style="float: right; margin: 7px;">
                      <p>안녕</p> -->
@@ -315,15 +337,15 @@ $(function(){
             <div class="modal-content" style="width:400px;">
                <form action="${path }/stuIdSearch.hd">
                      <span class="close" id="empIdSearchclose">&times;</span>
-                     <p>사번 찾기</p>
+                     <p style="color:rgb(222, 99, 91); font-weight:bold;">교번 찾기</p>
                      <div class="form-group"><br/>
                      <input type="hidden" name="loginNo" value="e"/>
                      <input type="text" id="searchName" placeholder="이름을 입력해주세요" class="form-control" autocomplete="off" required="required"/><br/>
                      <input type="text" id="searchEmail" placeholder="등록된 이메일을 입력해주세요" class="form-control" autocomplete="off"/><br/>
                      <input type="hidden" value="s" />
                      </div>
-                     <input type="button" class="btn btn-info btn-sm pull-right" id="empIdSearchclose1" value="취소" style="float: right; margin: 7px;">
-                     <input type="submit" class="btn btn-info btn-sm pull-right" value="전송" style="float: right; margin: 7px;">
+                     <input type="button" class="btn btn-info_prof btn-sm pull-right" id="empIdSearchclose1" value="취소" style="float: right; margin: 7px; font-weight:bold;">
+                     <input id="empSendBtn" type="submit" class="btn btn-info_prof btn-sm pull-right" value="전송" style="float: right; margin: 7px; font-weight:bold;">
                      <br>
                      <br>
                </form>   

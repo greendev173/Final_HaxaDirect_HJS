@@ -349,7 +349,7 @@ public class ProfessorController1 {
 	}
 	//강의 자료 게시판
 	@RequestMapping("/professor/lectureData")
-	public String lectureData(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage ,Model model) {
+	public String lectureData(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage ,Model model, HttpServletRequest req) {
 //		Professor p1 = (Professor)session.getAttribute("loginMember");
 //		String id = p1.getProfId();
 //		Professor p = service.professorView();
@@ -363,7 +363,7 @@ public class ProfessorController1 {
 		
 		model.addAttribute("board",list);
 		model.addAttribute("totalCount",totalData);
-		model.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/professor/lectureData"));
+		model.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/professor/lectureData"));
 		
 		return "professor/lectureData";
 	}
@@ -625,7 +625,7 @@ public class ProfessorController1 {
 	}
 //	과목조회
 	@RequestMapping("/professor/subjectCodeView")
-	public String subjectCodeView(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage, Model model,String profId) {
+	public String subjectCodeView(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage, Model model,String profId, HttpServletRequest req) {
 		
 		int numPerPage = 5;
 		
@@ -634,7 +634,7 @@ public class ProfessorController1 {
 		
 		model.addAttribute("list",list);
 		model.addAttribute("totalCount",totalData);
-		model.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/professor/subjectList"));
+		model.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/professor/subjectList"));
 		
 		return "professor/subjectList";
 	}
@@ -686,7 +686,7 @@ public class ProfessorController1 {
 	}
 	//교수 강의계획서 뷰
 	@RequestMapping("professor/lecturePlan")
-	public String planView(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage, Model model) {
+	public String planView(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage, Model model, HttpServletRequest req) {
 		
 		int numPerPage=10;
 		
@@ -699,7 +699,7 @@ public class ProfessorController1 {
 
 		model.addAttribute("plan",list);
 		model.addAttribute("totalCount",totalData);
-		model.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/professor/planView"));
+		model.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/professor/planView"));
 		
 //		mv.setViewName("professor/planView");
 		
@@ -932,7 +932,7 @@ public class ProfessorController1 {
 	}
 	//교수별 강의내역
 	@RequestMapping("/professor/profPlanResult")
-	public ModelAndView profPlanResult(@RequestParam(value="cPage",required=false,defaultValue="1") int cPage) {
+	public ModelAndView profPlanResult(@RequestParam(value="cPage",required=false,defaultValue="1") int cPage, HttpServletRequest req) {
 		
 		int numPerPage = 10;
 		
@@ -942,7 +942,7 @@ public class ProfessorController1 {
 		int totalData = service.totalPlanResult();
 		
 		mv.addObject("planResult",profPlanResult);
-		mv.addObject("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/professor/profPlanResult"));
+		mv.addObject("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/professor/profPlanResult"));
 		mv.setViewName("/professor/profPlanResult");
 		
 		return mv;

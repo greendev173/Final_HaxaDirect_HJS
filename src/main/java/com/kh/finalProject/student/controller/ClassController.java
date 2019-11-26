@@ -49,7 +49,7 @@ public class ClassController {
 		m.addAttribute("applyDay",planList);
 		m.addAttribute("list",list);
 		m.addAttribute("totalCount",totalData);
-		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/${path}/student/applyClass.hd"));
+		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/student/applyClass.hd"));
 		
 		return "student/applyClass";
 
@@ -57,7 +57,7 @@ public class ClassController {
 	
 	
 	@RequestMapping(value = "/student/selectClass.hd", method = RequestMethod.POST)
-	public String selectClass(HttpSession session, Model m,HttpServletRequest req,@RequestParam(value="cPage",required=false,defaultValue="1")int cPage) {
+	public String selectClass(HttpSession session, Model m,HttpServletRequest req, @RequestParam(value="cPage",required=false,defaultValue="1")int cPage) {
 		Student loginMember=(Student)session.getAttribute("loginMember");
 		
 		String stuId=loginMember.getStuNo();
@@ -82,7 +82,7 @@ public class ClassController {
 		
 		m.addAttribute("list",list);
 		m.addAttribute("totalCount",totalData);
-		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/${path}/student/selectClass.hd"));
+		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/student/selectClass.hd"));
 		return "student/applyClass";
 		
 	}
@@ -193,7 +193,8 @@ public class ClassController {
 	}
 
 	@RequestMapping("/student/myClassInfo.hd")
-	public String selectMyApplyClass(HttpSession session,Model m,@RequestParam(value="cPage",required=false,defaultValue="1")int cPage) {
+	public String selectMyApplyClass(HttpSession session,Model m,@RequestParam(value="cPage",required=false,defaultValue="1")int cPage
+			, HttpServletRequest req) {
 		Student loginMember=(Student)session.getAttribute("loginMember");
 		String stuId=loginMember.getStuNo();
 		
@@ -210,7 +211,7 @@ public class ClassController {
 		m.addAttribute("applyDay",planList);
 		m.addAttribute("list",list);
 		m.addAttribute("totalCount",totalData);
-		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/${path}/student/applyClass.hd"));
+		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/student/applyClass.hd"));
 		return "student/myApplyClass";
 	
 	}
