@@ -68,10 +68,26 @@
 			<mapping path="/professor/*"/>
 			<mapping path="*.hd"/>
 			<mapping path="*.do"/>
+			<mapping path="/*.hd"/>
+			<mapping path="/*.do"/>
 			<exclude-mapping path="/"/>
+			<exclude-mapping path="/login.hd"/>
 			<beans:bean class="com.kh.finalProject.common.interceptor.LoginCheck"/>
+			<!-- 위의 설정은 로그인 안한 상태에서 위의 경로 접근 불가능하게 설정 -->
 		</interceptor>
 	</interceptors>
+	
+	<interceptors>
+	    <beans:bean id="webContentInterceptor" class="org.springframework.web.servlet.mvc.WebContentInterceptor">
+	        <beans:property name="cacheSeconds" value="0" />
+	        <beans:property name="useExpiresHeader" value="true" />
+	        <beans:property name="useCacheControlHeader" value="true" />
+	        <beans:property name="useCacheControlNoStore" value="true" />
+	    </beans:bean>
+	    <!-- 위의 설정은 로그아웃하고 뒤로가기 불가능하도록 설정! -->
+	</interceptors>
+
+
 		 
 	<!-- 어노테이션 방식의 AOP 등록하기 -->	
 	<aop:aspectj-autoproxy/>

@@ -116,7 +116,7 @@ public class MemberController {
 		return "common/msg";
 	}
 	
-	@RequestMapping("/logout.hd")
+	@RequestMapping("/logout.hd") // 로그아웃 시 호출됨
 	public String logout(HttpSession session) {
 		session.invalidate();
 		return "redirect:/index.jsp";
