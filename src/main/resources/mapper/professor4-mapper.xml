@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="prof4">
+
+
+	<select id="selectProfSubject" parameterType="infoForProfSubject" resultMap="profSubjectResult">
+		SELECT C.*, S.SUB_NAME, S.SUB_DATE, S.SUB_TIME
+		FROM (SELECT SUB_SEQ, SUB_CODE, PROF_ID
+		FROM HD_CLASS_TB
+		WHERE PROF_ID=#{profId}) C
+		JOIN HD_SUBJECT_TB S
+		ON C.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+	</select>
+	
+	<select id="selectAsgmtBoardList" parameterType="infoForProfSubject" resultMap="assignmentRegisterResult">
+		SELECT P.PROF_NAME, S.SUB_NAME, AR.* 
+		FROM (SELECT * 
+		FROM HD_ASGMT_REGD_TB 
+		WHERE PROF_ID=#{profId} AND SUB_SEQ=${subSeq}) AR
+		JOIN HD_SUBJECT_TB S
+		ON AR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		JOIN HD_CLASS_TB C
+		ON C.SUB_SEQ=S.SUB_SEQ
+		JOIN HD_PROFESSOR_TB P
+		ON AR.PROF_ID=P.PROF_ID
+		ORDER BY ASGMT_REGD_DATE DESC
+	</select>
+	
+	<select id="selectAsgmtBoardCount" parameterType="infoForProfSubject" resultType="_int">
+		SELECT COUNT(*)
+		FROM (SELECT * 
+		FROM HD_ASGMT_REGD_TB 
+		WHERE PROF_ID=#{profId} AND SUB_SEQ=${subSeq}) AR
+		JOIN HD_SUBJECT_TB S
+		ON AR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		JOIN HD_CLASS_TB C
+		ON C.SUB_SEQ=S.SUB_SEQ
+		ORDER BY ASGMT_REGD_DATE DESC
+	</select>
+	
+	<select id="selectAssignment" parameterType="infoForProfAssignment" resultMap="assignmentRegisterResult">
+		SELECT P.PROF_NAME, S.SUB_NAME, AR.* 
+		FROM (SELECT * 
+		FROM HD_ASGMT_REGD_TB 
+		WHERE PROF_ID=#{profId}
+		AND SUB_SEQ=#{subSeq}
+		AND ASGMT_NO=#{asgmtNo}) AR
+		JOIN HD_SUBJECT_TB S
+		ON AR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		JOIN HD_CLASS_TB C
+		ON C.SUB_SEQ=S.SUB_SEQ
+		JOIN HD_PROFESSOR_TB P
+		ON AR.PROF_ID=P.PROF_ID
+	</select>
+	
+	<insert id="insertAssignment" parameterType="assignmentRegister">
+		INSERT INTO HD_ASGMT_REGD_TB VALUES
+		(SEQ_ASGMT_SEQ.NEXTVAL, ${asgmtSeq}, #{profId}, #{asgmtNo}, #{asgmtRegdTitle}, 
+		#{asgmtRegdContent}, SYSTIMESTAMP, 0, #{asgmtRegdOrifileName}, #{asgmtRegdRefileName})
+	</insert>
+	
+	<update id="updateAssignment" parameterType="assignmentRegister">
+		UPDATE HD_ASGMT_REGD_TB SET ASGMT_REGD_TITLE=#{asgmtRegdTitle}, ASGMT_REGD_CONTENT=#{asgmtRegdContent}, 
+		<if test="asgmtRegdOrifileName !=''">
+		ASGMT_REGD_ORIFILE_NAME=#{asgmtRegdOrifileName}, ASGMT_REGD_REFILE_NAME=#{asgmtRegdRefileName}, 		
+		</if>
+		ASGMT_REGD_DATE=SYSTIMESTAMP WHERE SUB_SEQ=${subSeq} AND ASGMT_NO=${asgmtNo}
+	</update>
+
+
+  	<resultMap id="profSubjectResult" type="profSubject">
+		<result column="SUB_SEQ" property="subSeq" />
+		<result column="SUB_CODE" property="subCode" />
+		<result column="PROF_ID" property="profId" />
+		<result column="SUB_NAME" property="subName" />
+		<result column="SUB_DATE" property="subDate" />
+		<result column="SUB_TIME" property="subTime" />
+	</resultMap>
+	
+	<resultMap id="assignmentRegisterResult" type="assignmentRegister">
+		<result column="PROF_NAME" property="profName" />
+		<result column="SUB_NAME" property="subName" />
+		<result column="ASGMT_SEQ" property="asgmtSeq" />
+		<result column="SUB_SEQ" property="subSeq" />
+		<result column="PROF_ID" property="profId" />
+		<result column="ASGMT_NO" property="asgmtNo" />
+		<result column="ASGMT_REGD_TITLE" property="asgmtRegdTitle" />
+		<result column="ASGMT_REGD_CONTENT" property="asgmtRegdContent" />
+		<result column="ASGMT_REGD_DATE" property="asgmtRegdDate" />
+		<result column="READ_COUNT" property="readCount" />
+		<result column="ASGMT_REGD_ORIFILE_NAME" property="asgmtRegdOrifileName" />
+		<result column="ASGMT_REGD_REFILE_NAME" property="asgmtRegdRefileName" />
+	</resultMap>
+	
+</mapper>

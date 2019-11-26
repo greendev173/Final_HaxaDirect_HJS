@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="professor">
+	<select id="selectOne" parameterType="professor" resultMap="professorResult">
+		SELECT * FROM HD_PROFESSOR_TB WHERE prof_Id=#{profId} AND SUBSTR(prof_Id,1,1)='P'
+	</select>
+
+	<select id="selectProfList" resultType="map" parameterType="string">
+		SELECT *FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'P'
+		<if test="value != null">
+		AND SUBSTR(DEPT_CODE,1,1) = #{value}
+		</if>
+		 ORDER BY DEPT_CODE
+	</select>	
+
+	<select id="profCount" resultType="_int" parameterType="string">
+		SELECT NVL(COUNT(*),1) FROM HD_PROFESSOR_TB WHERE SUBSTR(PROF_ID,1,1) = 'P'
+		<if test="value != null">
+		AND SUBSTR(DEPT_CODE,1,1) = #{value}
+		</if>
+	</select>
+	
+	<select id="changeProfessor" parameterType="string" resultType="map">
+			SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'P'
+			<if test="value != null">
+			 AND DEPT_CODE = #{value}
+			</if>
+			  ORDER BY PROF_NAME
+	</select>
+	
+	<select id="changeProfessorCount" resultType="_int" parameterType="string">
+		SELECT NVL(COUNT(*),1) FROM HD_PROFESSOR_TB WHERE SUBSTR(PROF_ID,1,1) = 'P'
+		<if test="value != null">
+			 AND DEPT_CODE = #{value}
+			</if>
+	</select>
+	
+	<select id="selectProfLastNum" parameterType="string" resultType="_int">
+		SELECT NVL(MAX(SUBSTR(PROF_ID,9,2)),0) FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'P' AND DEPT_CODE = #{deptCode}
+	</select>
+	
+	<insert id="insertNewProf" parameterType="professor">
+	    INSERT INTO HD_PROFESSOR_TB VALUES(#{profId},#{profPw},#{profName},#{profSsn},#{deptCode},#{email},#{phone},#{address},#{gender},DEFAULT,'profImg.PNG')
+	</insert>
+	
+	<select id="deptProf" resultType="map" parameterType="map">
+  		SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+		WHERE SUBSTR(PROF_ID,1,1) = 'P'
+ 		<if test="deptCode != null">
+		AND DEPT_CODE = #{deptCode}
+		</if>
+		<if test="search != null">
+		AND PROF_ID LIKE '%${search}%' OR PROF_NAME LIKE '%${search}%'
+		</if>
+		 ORDER BY PROF_ENROLL DESC, DEPT_CODE
+	</select>
+	
+	<select id="deptProfCount" resultType="_int" parameterType="map">
+  		SELECT NVL(COUNT(*),0) FROM HD_PROFESSOR_TB
+		WHERE SUBSTR(PROF_ID,1,1) = 'P'
+  		<if test="deptCode != null">
+		AND DEPT_CODE = #{deptCode}
+		</if>
+		<if test="search != null">
+		AND PROF_ID LIKE '%${search}%' OR PROF_NAME LIKE '%${search}%'  
+		</if>
+	</select>
+	
+  <resultMap id="professorResult" type="professor">
+		<result column="PROF_ID" property="profId" />
+		<result column="PROF_PW" property="profPw" />
+		<result column="PROF_NAME" property="profName" />
+		<result column="PROF_SSN" property="profSsn" />
+		<result column="DEPT_CODE" property="deptCode" />	
+		<result column="EMAIL" property="email" />	
+		<result column="PHONE" property="phone" />	
+		<result column="ADDRESS" property="address" />	
+		<result column="GENDER" property="gender" />	
+		<result column="PROF_ENROLL" property="profEnroll" />	
+	</resultMap>
+</mapper>

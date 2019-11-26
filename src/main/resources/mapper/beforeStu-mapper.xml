@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="beforeStu">
+  
+
+
+	<select id="selectColList" resultType="map">
+	SELECT COL_NAME, COL_CODE FROM HD_COLLEGE_TB WHERE COL_CODE != 'Z' AND COL_OPEN='Y'
+	</select>
+
+	<select id="selectDeptList" parameterType="string" resultType="map">
+	SELECT DEPT_CODE, DEPT_NAME FROM HD_DEPARTMENT_TB WHERE COL_CODE = #{result}
+	</select>
+
+	<select id="selectDCList" resultType="map">
+	SELECT COL_CODE, COL_NAME, DEPT_CODE, DEPT_NAME FROM HD_COLLEGE_TB JOIN hd_department_tb USING(COL_CODE)
+	</select>
+
+	<insert id="insertBeforeStudent" parameterType="beforeStudent">
+	INSERT INTO hd_admission_tb VALUES(BEFORE_STU_SEQ.NEXTVAL , #{beforeName}, #{beforeType}, #{beforePhone}, #{beforeEmail}, #{beforeAddr}, #{beforeNo}, #{beforeDeptCode}, #{beforeColCode})
+	</insert>
+
+	<select id="selectList" resultMap="selectMap">	
+		SELECT * FROM
+  		(SELECT  COL_CODE, COL_NAME, DEPT_CODE AS D, DEPT_NAME FROM HD_COLLEGE_TB 
+  			JOIN hd_department_tb USING(COL_CODE))
+  				JOIN hd_admission_tb A USING(COL_CODE) WHERE D = A.DEPT_CODE 
+	</select>
+	
+	<select id="selectBeforeStu" parameterType="_int" resultMap="selectMap">
+	SELECT * FROM hd_admission_tb WHERE BEFORE_STU_SEQ = #{beforeStu}
+	</select>
+	
+	<delete id="deleteBeforeStu" parameterType="_int">
+	DELETE FROM hd_admission_tb WHERE BEFORE_STU_SEQ = #{beforeStu}
+	</delete>
+	
+	<delete id="deleteBstuList">
+	DELETE FROM hd_admission_tb WHERE DEPT_CODE = #{deptCode}
+	</delete>
+	
+
+	<resultMap type="beforeStudent" id="selectMap">
+		<result column="BEFORE_STU_SEQ" property="beforeStu"/>
+		<result column="BEFORE_NAME" property="beforeName"/>
+		<result column="BEFORE_TYPE" property="beforeType"/>
+		<result column="BEFORE_PHONE" property="beforePhone"/>
+		<result column="BEFORE_EMAIL" property="beforeEmail"/>
+		<result column="BEFORE_ADDRESS" property="beforeAddr"/>
+		<result column="BEFORE_NO" property="beforeNo"/>
+		<result column="DEPT_CODE" property="beforeDeptCode"/>
+		<result column="COL_CODE" property="beforeColCode"/>
+		<result column="DEPT_NAME" property="beforeDeptName"/>
+		<result column="COL_NAME" property="beforeColName"/>
+	</resultMap>
+</mapper>

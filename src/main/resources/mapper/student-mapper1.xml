@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="student1">
+
+	<select id="selectStudent" parameterType="string"
+		resultMap="studentResult">
+		SELECT * FROM HD_STUDENT_TB WHERE STU_NO=#{studentNo}
+	</select>
+
+	<select id="selectAllClass" parameterType="string" resultType="map">
+		
+		select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 LEFT JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc , sub_semester desc
+		         )ta
+
+	</select>
+	<select id="selectPlan" resultType="map">
+		select * from hd_plan_tb where PLAN_NAME LIKE '%수강%' AND PLAN_NAME LIKE '%신청%' AND SYSDATE <![CDATA[<]]> PLAN_END_DATE AND SYSDATE<![CDATA[>]]> PLAN_START_DATE
+	</select>
+	<select id="selectClass" parameterType="map" resultType="map">
+
+		select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 LEFT JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc , sub_semester desc
+		         )ta
+
+		where 1=1
+
+		<if test="chk_isu !=null and chk_isu != ''">
+			AND sub_type = #{chk_isu}
+		</if>
+
+		<if test="chk_school !=null and chk_school != ''">
+			AND SUBSTR(SUB_CODE,0,1) = #{chk_school}
+		</if>
+
+		<if test="chk_dept !=null and chk_dept != ''">
+			AND DEPT_NAME = #{chk_dept}
+		</if>
+
+		<if test="chk_year !=null and chk_year != ''">
+			AND SUB_YEAR = #{chk_year}
+		</if>
+
+		<if test="chk_sem !=null and chk_sem != ''">
+			AND SUB_SEMESTER = #{chk_sem}
+		</if>
+
+		<if test="chk_subName !=null and chk_subName != ''">
+			AND SUB_NAME LIKE '%'||#{chk_subName}||'%'
+		</if>
+
+	</select>
+
+	<select id="countSelectClass" parameterType="map"
+		resultType="_int">
+		SELECT COUNT(*) FROM (select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 LEFT JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc
+		         )ta)
+
+			where 1=1
+		<if test="chk_isu !=null and chk_isu != ''">
+			AND sub_type = #{chk_isu}
+		</if>
+
+		<if test="chk_school !=null and chk_school != ''">
+			AND SUBSTR(SUB_CODE,0,1) = #{chk_school}
+		</if>
+
+		<if test="chk_dept !=null and chk_dept != ''">
+			AND DEPT_NAME = #{chk_dept}
+		</if>
+
+		<if test="chk_year !=null and chk_year != ''">
+			AND SUB_YEAR = #{chk_year}
+		</if>
+
+		<if test="chk_sem !=null and chk_sem != ''">
+			AND SUB_SEMESTER = #{chk_sem}
+		</if>
+
+		<if test="chk_subName !=null and chk_subName != ''">
+			AND SUB_NAME LIKE '%'||#{chk_subName}||'%'
+		</if>
+
+
+	</select>
+
+
+
+	<select id="countAllClass" resultType="_int">
+		SELECT COUNT(*) FROM (select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 LEFT JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc
+		         )ta)
+	</select>
+
+	<select id="selectApplyClass" parameterType="string"
+		resultType="map">
+
+		select * from HD_SUB_REQ_TB
+
+	</select>
+
+	<update id="studentInfoUpdate" parameterType="student">
+		<choose>
+			<when test='stuImgRename eq "false"'>
+				UPDATE HD_STUDENT_TB SET
+				STU_TEL=#{stuTel},STU_ADDR=#{stuAddr},STU_EMAIL=#{stuEmail},
+				STU_ACCOUNT=#{stuAccount} where STU_NO=#{stuNo}
+			</when>
+			<when test='stuImgRename != "false"'>
+				UPDATE HD_STUDENT_TB SET
+				STU_TEL=#{stuTel},STU_ADDR=#{stuAddr},STU_EMAIL=#{stuEmail},
+				STU_IMG_ORINAME=#{stuImgOriname},STU_IMG_RENAME=#{stuImgRename},STU_ACCOUNT=#{stuAccount}
+				where STU_NO=#{stuNo}
+			</when>
+		</choose>
+	</update>
+	<select id="selectProfEval" parameterType="map" resultType="map">
+		SELECT
+		ACA_YEAR_SEB,PROF_NAME,DEPT_NAME,SUB_NAME,EVAL_DATE,ACA_YEAR_SEB,EVAL_POINT,PHONE,GENDER,EVAL_COMMENT,A.PROF_ID
+		FROM HD_PROF_ASSESS_TB A,HD_PROFESSOR_TB B,HD_SUBJECT_TB
+		C,HD_DEPARTMENT_TB D
+		WHERE A.PROF_ID=B.PROF_ID AND A.SUB_CODE=C.SUB_CODE AND
+		C.DEPT_CODE=D.DEPT_CODE AND ACA_YEAR_SEB=#{semester} AND
+		A.PROF_ID=#{profId} AND SUB_NAME=#{subName}
+		ORDER BY EVAL_DATE DESC
+	</select>
+
+	<select id="selectProfInfo" parameterType="map" resultType="map">
+		select * FROM HD_PROFESSOR_TB A 
+        left join HD_CLASS_TB B on a.prof_id=b.prof_id
+        join HD_SUBJECT_TB c on b.sub_seq=c.sub_seq
+        join HD_DEPARTMENT_TB D on c.dept_code=d.dept_code
+        where a.PROF_ID=#{profId} AND SUB_NAME=#{subName}
+	</select>
+
+	<insert id="applyClass" parameterType="map">
+		INSERT INTO HD_SUB_REQ_TB VALUES(#{stuId},${subSeq},default)
+
+	</insert>
+
+	<delete id="cancelClass" parameterType="map">
+		DELETE FROM HD_SUB_REQ_TB WHERE STU_NO=#{stuId} AND SUB_SEQ=${subSeq}
+	</delete>
+	
+	<delete id="cancelMyClass" parameterType="map">
+		DELETE FROM HD_SUB_REQ_TB WHERE STU_NO=#{stuId} AND SUB_SEQ=${subSeq}
+	</delete>
+
+
+	<select id="averPoint" parameterType="map" resultType="_double">
+		select avg(EVAL_POINT) from HD_PROF_ASSESS_TB where PROF_ID=#{profId}
+	</select>
+
+	<select id="myApplyClass" parameterType="string" resultType="map">
+
+		select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 right JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc
+		         )ta
+
+	</select>
+
+
+	<select id="countMyApplyClass" parameterType="string" resultType="_int">
+		select count(*)from(select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 right JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc
+		         )ta)
+
+	</select>
+
+	<select id="selectMyClass" parameterType="map" resultType="map">
+		select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 RIGHT JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc
+		         )ta
+		          where 1=1
+		<if test="chk_isu !=null and chk_isu != ''">
+			AND sub_type = #{chk_isu}
+		</if>
+
+		<if test="chk_school !=null and chk_school != ''">
+			AND SUBSTR(SUB_CODE,0,1) = #{chk_school}
+		</if>
+
+		<if test="chk_dept !=null and chk_dept != ''">
+			AND DEPT_NAME = #{chk_dept}
+		</if>
+
+		<if test="chk_year !=null and chk_year != ''">
+			AND SUB_YEAR = #{chk_year}
+		</if>
+
+		<if test="chk_sem !=null and chk_sem != ''">
+			AND SUB_SEMESTER = #{chk_sem}
+		</if>
+
+		<if test="chk_subName !=null and chk_subName != ''">
+			AND SUB_NAME LIKE '%'||#{chk_subName}||'%'
+		</if>
+
+	</select>
+
+
+
+	<select id="countSelectMyClass" parameterType="map"
+		resultType="_int">
+		select count(*) from(select rownum,ta.* 
+             from(select A.*,B.SUB_NAME,B.TARGET_SUBJECT,B.TARGET_GRADE,B.COMPLETE_PT,B.SUB_TYPE,B.DEPT_CODE,
+             B.SUB_DATE,B.SUB_TIME,B.SUB_ROOM,B.SUB_YEAR,B.SUB_SEMESTER,P.PROF_NAME,P.EMAIL,P.GENDER,P.PROF_ENROLL,P.PROF_IMG,
+             D.DEPT_NAME,D.DEPT_OPEN,SUB_REQ.STU_NO
+		         from  hd_class_tb A
+		         join hd_subject_tb B on a.sub_seq = b.sub_seq
+		         join hd_professor_tb p on a.prof_id = p.prof_id
+		         join HD_DEPARTMENT_TB d  on p.dept_code = d.dept_code
+                 RIGHT JOIN (select R.STU_NO,r.sub_seq
+		         from  hd_class_tb A
+                 join hd_sub_req_tb r on a.sub_seq=r.sub_seq
+                 WHERE R.stu_no=#{stuId})SUB_REQ ON SUB_REQ.SUB_seq=a.sub_seq
+		         order by sub_year desc
+		         )ta)
+			where 1=1
+		<if test="chk_isu !=null and chk_isu != ''">
+			AND sub_type = #{chk_isu}
+		</if>
+
+		<if test="chk_school !=null and chk_school != ''">
+			AND SUBSTR(SUB_CODE,0,1) = #{chk_school}
+		</if>
+
+		<if test="chk_dept !=null and chk_dept != ''">
+			AND DEPT_NAME = #{chk_dept}
+		</if>
+
+		<if test="chk_year !=null and chk_year != ''">
+			AND SUB_YEAR = #{chk_year}
+		</if>
+
+		<if test="chk_sem !=null and chk_sem != ''">
+			AND SUB_SEMESTER = #{chk_sem}
+		</if>
+
+		<if test="chk_subName !=null and chk_subName != ''">
+			AND SUB_NAME LIKE '%'||#{chk_subName}||'%'
+		</if>
+
+
+	</select>
+
+
+	<update id="updatePw" parameterType="map">
+
+		UPDATE HD_STUDENT_TB SET STU_PW=#{stuPw} WHERE STU_NO=#{stuId}
+
+	</update>
+
+	<update id="updatePrecapa" parameterType="map">
+	
+		UPDATE HD_CLASS_TB SET PRE_CAPA = PRE_CAPA+1 WHERE SUB_SEQ=${subSeq}
+	
+	</update>
+	
+	<update id="updatePrecapaCancel" parameterType="map">
+		UPDATE HD_CLASS_TB SET PRE_CAPA = PRE_CAPA-1 WHERE SUB_SEQ=${subSeq}
+	</update>
+
+
+	<select id="selectNowPw" parameterType="string"
+		resultType="string">
+
+		SELECT STU_PW FROM HD_STUDENT_TB WHERE STU_NO = #{stuId}
+	</select>
+	
+	<select id="capacityNow" parameterType="string"
+		resultType="map">
+
+		SELECT * FROM HD_CLASS_TB WHERE SUB_SEQ=#{subSeq}
+	</select>
+
+<select id="selectStuInfo" parameterType="string" resultType="map">
+
+	SELECT * FROM HD_STUDENT_TB WHERE STU_NO=#{stuId}
+</select>
+	
+
+	<resultMap id="studentResult" type="student">
+		<result column="STU_NO" property="stuNo" />
+		<result column="STU_NAME" property="stuName" />
+		<result column="STU_PW" property="stuPw" />
+		<result column="STU_SSN" property="stuSsn" />
+		<result column="STU_TEL" property="stuTel" />
+		<result column="STU_ADDR" property="stuAddr" />
+		<result column="GENDER" property="gender" />
+		<result column="DEPT_CODE" property="deptCode" />
+		<result column="ENTER_DATE" property="enterDate" />
+		<result column="STU_EMAIL" property="stuEmail" />
+		<result column="REG_STATUS" property="regStatus" />
+		<result column="PROF_ID" property="profId" />
+		<result column="STU_YEAR_SEM" property="stuYearSem" />
+		<result column="MAX_PSB_CR" property="maxPsbCr" />
+		<result column="CON_SEMESTER" property="conSemester" />
+		<result column="STU_IMG_ORINAME" property="stuImgOriname" />
+		<result column="STU_IMG_RENAME" property="stuImgRename" />
+		<result column="STU_ACCOUNT" property="stuAccount" />
+	</resultMap>
+
+
+	<resultMap id="classResult" type="insertClass">
+		<result column="SUB_CODE" property="subCode" />
+		<result column="SUB_YEAR" property="classYear" />
+		<result column="SUB_SEMESTER" property="tSemester" />
+		<result column="CLASS_NAME" property="className" />
+		<result column="PROF_ID" property="profId" />
+		<result column="OPEN_YN" property="openYn" />
+		<result column="CAPACITY" property="capacity" />
+		<result column="PRE_CAPA" property="pre_capa" />
+		<result column="ASSIGN_1" property="assign1" />
+		<result column="ASSIGN_2" property="assign2" />
+		<result column="ASSIGN_3" property="assign3" />
+		<result column="ASSIGN_4" property="assign4" />
+		<result column="MTERM" property="mTerm" />
+		<result column="FTERM" property="fTerm" />
+		<result column="STATUS_GRADE" property="statusGrade" />
+		<result column="USE_BOOK" property="useBook" />
+		<result column="BOOK_NAME" property="bookName" />
+		<result column="EVA_STAN" property="evaStan" />
+		<result column="OPEN_OTHER" property="openOther" />
+		<result column="CL_ORIFILENAME" property="clOriFileName" />
+		<result column="CL_REFILENAME" property="clReFileName" />
+
+	</resultMap>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="tuition">
+	<select id="selectOne" parameterType="tuition" resultMap="tuitionResult">
+		SELECT* FROM HD_TUITION_TB WHERE TUI_YEAR=#{tuiYear} AND DEPT_CODE=#{deptCode}
+	</select>
+	<insert id="insertTuition" parameterType="tuition">
+		INSERT INTO HD_TUITION_TB VALUES(#{tuiYear}, #{deptCode}, #{tuiPay}, #{tuiPayDate})
+	</insert>
+	<select id="tuitionList" parameterType="tuition" resultType="map">
+		SELECT TUI_YEAR, DEPT_CODE, TUI_PAY, DEPT_NAME, COL_NAME FROM HD_TUITION_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) JOIN HD_COLLEGE_TB USING(COL_CODE) WHERE TUI_YEAR=#{tuiYear} ORDER BY DEPT_CODE
+	</select>
+	
+	<select id="tuitionListFirst" parameterType="tuition" resultType="map">
+		SELECT TUI_YEAR, DEPT_CODE, TUI_PAY, DEPT_NAME, COL_NAME FROM HD_TUITION_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) JOIN HD_COLLEGE_TB USING(COL_CODE) WHERE SUBSTR(TUI_YEAR,0,4)='2019' ORDER BY DEPT_CODE
+	</select>
+	
+	<update id="tuitionUpdate" parameterType="tuition">
+		UPDATE HD_TUITION_TB SET TUI_PAY= TRIM(TO_CHAR( #{tuiPay} , '999,999,999,999,999')) WHERE TUI_YEAR=#{tuiYear} AND DEPT_CODE=#{deptCode}
+	</update>
+	
+	<resultMap type="tuition" id="tuitionResult">
+		<result column="TUI_YEAR" property="tuiYear" />
+		<result column="DEPT_CODE" property="deptCode" />
+		<result column="TUI_PAY" property="tuiPay" />
+		<result column="TUI_PAY_DATE" property="tuiPayDate" />
+	</resultMap>
+</mapper>

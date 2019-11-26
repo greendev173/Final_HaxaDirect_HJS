@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org/DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.Professor" alias="professor"/>
+		<typeAlias type="com.kh.finalProject.employee.model.vo.Employee" alias="employee"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.Student" alias="student"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.Grade" alias="grade"/>
+		<typeAlias type="com.kh.finalProject.beforeStudent.model.vo.BeforeStu" alias="beforeStudent"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.StuTuition" alias="stuTuition"/>
+		<typeAlias type="com.kh.finalProject.req.model.vo.Req" alias="req"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.SelectInMajor" alias="selectInMajor"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.InsertClass" alias="insertClass"/>
+		<typeAlias type="com.kh.finalProject.tuition.model.vo.Tuition" alias="tuition"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.SelectInClass" alias="selectInClass"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.Select_SubjectNameCode" alias="selectSubjectNameCode"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.InClassStudent" alias="inClassStudent"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.GraduationCon" alias="graduationCon"/>
+		<typeAlias type="com.kh.finalProject.schedule.model.vo.Schedule" alias="schedule"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.Select_ClassInfo" alias="selectClassInfo"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.Subject" alias="subject"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.SelectAttendList" alias="selectAttendList"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.AttendStudent" alias="attendStudent"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.MySchedule" alias="mySchedule"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.MyScheduleForInfo" alias="myScheduleForInfo"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.Request" alias="request"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.Department" alias="department"/>
+		<typeAlias type="com.kh.finalProject.school.model.vo.College" alias="college"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.InfoForSearchGrade" alias="infoForSearchGrade"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.ProfAssess" alias="ProfAssess"/>
+		<typeAlias type="com.kh.finalProject.employee.model.vo.Curriculum" alias="curriculum"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.InfoForProfSubject" alias="infoForProfSubject"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.ProfSubject" alias="profSubject"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.AssignmentRegister" alias="assignmentRegister"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.InfoForProfAssignment" alias="infoForProfAssignment"/>
+		<typeAlias type="com.kh.finalProject.employee.model.vo.NoticeVo" alias="notice"/>
+		<typeAlias type="com.kh.finalProject.student.model.vo.MyClass" alias="myClass"/>
+	</typeAliases>
+</configuration>

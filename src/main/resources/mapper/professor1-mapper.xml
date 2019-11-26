@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="professor1">
+	<select id="selectProfName" resultType="string">
+		SELECT PROF_NAME FROM HD_PROFESSOR_TB WHERE PROF_NAME='교수1'
+	</select>
+	<!-- 게시판 페이징 토탈데이타 -->
+	<select id="selectBoardCount" resultType="_int">
+		SELECT COUNT(*) FROM HD_PROF_BOARD_TB
+	</select>
+	<!-- 강의계획서 게시판 토탈데이타 -->
+	<select id="selectPlanCount" resultType="_int">
+		SELECT COUNT(*) FROM HD_PROF_PLAN_TB
+	</select>
+	<!-- SUBJECT 토탈데이타 -->
+	<select id="selectSubjectCount" resultType="_int" parameterType="string">
+		SELECT COUNT(*) FROM HD_SUBJECT_TB JOIN HD_PROFESSOR_TB USING(DEPT_CODE) WHERE PROF_ID=#{profId}
+	</select>
+	<!-- 강의개설 뷰 -->
+	<select id="insertSubject" resultType="map">
+		<!-- SELECT * FROM HD_CLASS_TB S JOIN HD_SUBJECT_TB C USING (SUB_CODE) JOIN HD_PROFESSOR_TB USING (PROF_ID) -->
+		SELECT * FROM HD_SUBJECT_TB S JOIN HD_CLASS_TB C USING (SUB_SEQ) JOIN HD_DEPARTMENT_TB D USING(DEPT_CODE) JOIN HD_PROFESSOR_TB USING (PROF_ID)
+	</select>
+	<!-- 강의 개설 -->
+	<select id="selectSubCode" parameterType="map" resultType="_int">
+		<!-- SELECT COUNT(SUB_CODE) SUB_CODE FROM HD_CLASS_TB WHERE SUB_CODE = #{subCode} AND SUB_TIME = #{subTime} -->
+		SELECT COUNT(*) SUB_CODE FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON C.SUB_SEQ=S.SUB_SEQ WHERE C.SUB_CODE = #{subCode} AND S.SUB_TIME = #{classTime}
+	</select>
+	<insert id="insertSubjectEnd" parameterType="map">
+		INSERT INTO HD_CLASS_TB VALUES(#{subCode},#{profId},#{openYn},#{capacity},#{assignA},#{assignB},
+		#{assignC},#{assignD},#{mTerm},#{fTerm},#{statusGrade},#{useBook},#{bookName},#{evaStan},#{openOther},#{oriFile},#{upFile},0,#{subSeq})
+	</insert>
+	<select id="subjectView" resultType="map" parameterType="map">
+		SELECT * FROM HD_SUBJECT_TB S JOIN HD_CLASS_TB C USING (SUB_CODE) JOIN HD_DEPARTMENT_TB D USING(DEPT_CODE) 
+		JOIN HD_PROFESSOR_TB USING (PROF_ID) WHERE SUB_CODE=#{subCode} AND PROF_ID=#{profId}
+	</select>
+	<!-- 강의 상세조회 -->
+	<select id="selectSubjectView" resultType="map" parameterType="map">
+		<!-- SELECT * FROM HD_SUBJECT_TB S JOIN HD_CLASS_TB C USING (SUB_CODE) JOIN HD_PROFESSOR_TB USING (PROF_ID) WHERE SUB_CODE=#{subCode} AND PROF_ID=#{profId} -->
+		SELECT * FROM HD_SUBJECT_TB S JOIN HD_CLASS_TB C ON S.SUB_SEQ=C.SUB_SEQ JOIN HD_DEPARTMENT_TB D ON D.DEPT_CODE=S.DEPT_CODE
+		JOIN HD_PROFESSOR_TB P ON P.PROF_ID=C.PROF_ID WHERE S.SUB_CODE=#{subCode} AND C.PROF_ID=#{profId} AND S.SUB_TIME=#{subTime}
+	</select>
+	<!-- 강의 개설 YN -->
+	<update id="subjectYn" parameterType="string">
+		UPDATE HD_CLASS_TB SET OPEN_YN = 'Y' WHERE SUB_CODE = #{subCode}
+	</update>
+	<!-- 교수 뷰 --> 
+	<select id="professorView" resultMap="subjectMap" parameterType="string">
+		SELECT * FROM HD_CLASS_TB S JOIN HD_PROFESSOR_TB C USING (PROF_ID) WHERE PROF_ID=#{profId} AND OPEN_YN='Y'
+	</select>
+	
+	<!-- 교수 정보수정 -->
+<!-- 	<insert id="updateProfessor" parameterType="string">
+		UPDATE HD_PROFESSOR_TB SET EMAIL=#{email}, PHONE=#{phone}, ADDRESS=#{address} WHERE PROF_ID=#{profId}
+	</insert> -->
+	<update id="updateProfessor" parameterType="professor">
+		UPDATE HD_PROFESSOR_TB SET EMAIL=#{email}, PHONE=#{phone}, ADDRESS=#{address} WHERE PROF_ID=#{profId}
+	</update>
+
+	<!-- 비번 -->
+	<select id="selectPwd" parameterType="string" resultMap="professorResult1">
+		SELECT PROF_PW FROM HD_PROFESSOR_TB WHERE PROF_ID=#{profId}
+	</select>
+	<update id="profUpdatePwdEnd" parameterType="map">
+		UPDATE HD_PROFESSOR_TB SET PROF_PW=#{profPwdUpdate} WHERE PROF_ID=#{profId}
+	</update>
+	<!-- 게시판뷰 -->
+	<select id="boardView" resultType="map">
+		SELECT T.*,(SELECT COUNT(*) FROM HD_PROF_ATTACHMENT_TB WHERE T.PROF_BOARD_NO=PROF_BOARD_NO) AS ATTACH 
+		FROM HD_PROF_BOARD_TB T ORDER BY PROF_BOARD_NO DESC
+		<!-- SELECT A.*, (SELECT COUNT(*) FROM HD_PROF_ATTACHMENT_TB WHERE PROF_BOARD_NO = A.PROF_BOARD_NO) AS ATTACHCOUNT FROM HD_PROF_BOARD_TB A ORDER BY PROF_BOARD_DATE DESC -->
+	</select>
+	<!-- 게시판 작성 -->
+	<insert id="insertBoardEnd" parameterType="com.kh.finalProject.professor.model.vo.ProfessorBoard">
+		INSERT INTO HD_PROF_BOARD_TB VALUES(SEQ_PROF_BOARD_NO.NEXTVAL,#{profName},#{profBoardType},#{profBoardTitle},#{profBoardContent},
+		SYSDATE,DEFAULT,#{profId})
+		<selectKey keyProperty="profBoardNo" resultType="_int" order="AFTER">
+			SELECT SEQ_PROF_BOARD_NO.CURRVAL FROM DUAL
+		</selectKey>
+	</insert>
+	<insert id="insertBoardAttachment" parameterType="com.kh.finalProject.professor.model.vo.ProfBoardAttachment">
+		INSERT INTO HD_PROF_ATTACHMENT_TB VALUES(SEQ_PROF_BOARD_FILENO.NEXTVAL,#{profBoardNo},#{boardOrifilename},#{boardRefilename},DEFAULT)
+	</insert>
+	<!-- 게시판 조회 -->
+	<update id="updateReadCount" parameterType="com.kh.finalProject.professor.model.vo.ProfessorBoard">
+		UPDATE HD_PROF_BOARD_TB SET PROF_BOARD_READCOUNT = PROF_BOARD_READCOUNT+1 WHERE PROF_BOARD_NO = #{profBoardNo}
+	</update>
+	<!-- 게시판 수정 -->
+	<update id="updateBoardEnd" parameterType="com.kh.finalProject.professor.model.vo.ProfessorBoard">
+		UPDATE HD_PROF_BOARD_TB SET PROF_BOARD_TYPE=#{profBoardType},PROF_BOARD_TITLE=#{profBoardTitle},PROF_BOARD_CONTENT=#{profBoardContent} 
+		WHERE PROF_BOARD_NO=#{profBoardNo}
+	</update>
+	<update id="updateAttachment" parameterType="com.kh.finalProject.professor.model.vo.ProfBoardAttachment">
+		UPDATE HD_PROF_ATTACHMENT_TB SET BOARD_ORIFILENAME=#{boardOrifilename},BOARD_REFILENAME=#{boardRefilename} WHERE PROF_BOARD_NO=#{profBoardNo}
+	</update>
+	<!-- 게시판 삭제 -->
+	<delete id="deleteBoard" parameterType="com.kh.finalProject.professor.model.vo.ProfessorBoard">
+		DELETE FROM HD_PROF_BOARD_TB WHERE PROF_BOARD_NO = #{profBoardNo} 
+	</delete>
+	<delete id="deleteAttachment" parameterType="com.kh.finalProject.professor.model.vo.ProfBoardAttachment">
+		DELETE FROM HD_PROF_ATTACHMENT_TB WHERE PROF_BOARD_NO = #{profBoardNo}
+	</delete>
+	<!-- 게시판 상세 -->
+	<select id="selectBoardView" parameterType="_int" resultMap="professorBoardMap">
+		SELECT * FROM HD_PROF_BOARD_TB WHERE PROF_BOARD_NO=#{profBoardNo}
+	</select>
+	<select id="selectProfAttachment" parameterType="_int" resultMap="profBoardAttachment">
+		SELECT * FROM HD_PROF_ATTACHMENT_TB WHERE PROF_BOARD_NO=#{profBoardNo}
+	</select>
+	
+	<!-- subject -->
+	<select id="subjectCodeView" resultType="map" parameterType="string">
+		SELECT * FROM HD_SUBJECT_TB A JOIN HD_PROFESSOR_TB P USING(DEPT_CODE) JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE P.PROF_ID=#{profId}
+		<!-- SELECT S.*,P.DEPT_CODE,P.PROF_NAME FROM HD_SUBJECT_TB S,HD_PROFESSOR_TB P WHERE S.DEPT_CODE = P.DEPT_CODE(+) AND P.PROF_ID=#{profId} -->
+		<!-- SELECT S.*,P.DEPT_CODE,P.PROF_NAME,D.DEPT_NAME FROM HD_SUBJECT_TB S,HD_PROFESSOR_TB P,HD_DEPARTMENT_TB D WHERE S.DEPT_CODE = P.DEPT_CODE(+) AND S.DEPT_CODE = D.DEPT_CODE AND PROF_ID=#{profId}; -->
+		<!-- SELECT * FROM HD_SUBJECT_TB S JOIN HD_CLASS_TB C USING (SUB_CODE) JOIN HD_DEPARTMENT_TB D USING(DEPT_CODE) JOIN HD_PROFESSOR_TB USING (PROF_ID) WHERE PROF_ID=#{profId} -->
+	</select>
+	<select id="selectSubject" resultType="map" parameterType="map">
+		SELECT * FROM HD_SUBJECT_TB S JOIN HD_DEPARTMENT_TB USING (DEPT_CODE) WHERE SUB_CODE=#{subCode} AND SUB_TIME=#{subTime} AND SUB_YEAR=#{subYear} AND TARGET_GRADE=#{targetGrade} AND SUB_SEMESTER=#{subSemester}
+	</select>
+	<!-- 과목코드 눌렀을때 보이는 뷰 -->
+	<select id="selectSubjectCode" resultType="_int" parameterType="string">
+		SELECT COUNT(SUB_CODE) SUB_CODE FROM HD_CLASS_TB WHERE PROF_ID = #{profId} AND SUB_CODE = #{subCode}
+	</select>
+	
+	<!-- 강의계획서 게시판 -->
+	<select id="planBoardView" resultMap="planBoardMap">
+		SELECT * FROM HD_PROF_PLAN_TB ORDER BY PLAN_NO DESC
+	</select>
+	<!-- 강의계획서 작성 -->
+	<insert id="insertPlanEnd" parameterType="com.kh.finalProject.professor.model.vo.PlanBoard">
+		INSERT INTO HD_PROF_PLAN_TB VALUES(SEQ_PROF_PLAN_NO.NEXTVAL,#{planYear},#{planSemester},#{planSubName},#{planSubTime},#{planSubRoom},
+		#{planBookName},#{planBookAuthor},#{planBookYear},#{planBookWhere},#{planWay},#{planGoal},#{profName},#{planSubName},#{planContent},
+		#{planMterm},#{planFterm},#{planAssign},#{planStatus},DEFAULT)
+	</insert>
+	<!-- 강의 계획서 select -->
+	<select id="selectPlanView" parameterType="_int" resultMap="planBoardMap">
+		SELECT * FROM HD_PROF_PLAN_TB WHERE PLAN_NO=#{planNo}
+	</select>
+	<!-- 강의 계획서 수정 -->
+	<update id="updatePlanEnd" parameterType="map">
+		UPDATE HD_PROF_PLAN_TB SET PLAN_YEAR=#{planYear},PLAN_SEMESTER=#{planSemester},PLAN_SUB_NAME=#{planSubName},PLAN_SUB_TIME=#{planSubTime},
+		PLAN_SUB_ROOM=#{planSubRoom},PLAN_BOOK_NAME=#{planBookName},PLAN_BOOK_AUTHOR=#{planBookAuthor},PLAN_BOOK_YEAR=#{planBookYear},
+		PLAN_BOOK_WHERE=#{planBookWhere},PLAN_WAY=#{planWay},PLAN_GOAL=#{planGoal},PLAN_TITLE=#{planTitle},PLAN_CONTENT=#{planContent},
+		PLAN_MTERM=#{planMterm},PLAN_FTERM=#{planFterm},PLAN_ASSIGN=#{planAssign},PLAN_STATUS=#{planStatus} WHERE PLAN_NO=#{planNo}
+	</update>
+	<!-- 교수 스케쥴 -->
+	<select id="profSchedule" parameterType="string" resultType="map">
+		SELECT S.SUB_YEAR,S.SUB_ROOM,S.SUB_NAME,S.SUB_TIME,S.SUB_DATE,C.SUB_CODE,C.PROF_ID FROM HD_CLASS_TB C 
+		JOIN HD_SUBJECT_TB S ON (C.SUB_SEQ=S.SUB_SEQ) WHERE C.PROF_ID=#{profId} AND C.OPEN_YN='Y'
+	</select>
+	<!-- 교수별 시간표 -->
+	<select id="deptProfSchedule" parameterType="string" resultType="map">
+		SELECT S.SUB_YEAR,S.SUB_NAME,S.SUB_ROOM,S.SUB_TIME,S.SUB_DATE,C.SUB_CODE,C.PROF_ID,P.PROF_NAME,D.DEPT_CODE,D.DEPT_NAME 
+		FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON (C.SUB_SEQ=S.SUB_SEQ) JOIN HD_PROFESSOR_TB P ON (C.PROF_ID=P.PROF_ID) 
+		JOIN HD_DEPARTMENT_TB D ON (S.DEPT_CODE=D.DEPT_CODE) WHERE P.DEPT_CODE=#{deptCode} AND C.OPEN_YN='Y'
+	</select>
+	<select id="deptCodeView" parameterType="string" resultType="map">
+		SELECT * FROM HD_DEPARTMENT_TB
+	</select>
+	<!-- 교수별 시간표 deptCode select -->
+	<select id="selectDeptCode" parameterType="string" resultType="map">
+		SELECT S.SUB_YEAR,S.SUB_NAME,S.SUB_ROOM,S.SUB_TIME,S.SUB_DATE,C.SUB_CODE,C.PROF_ID,P.PROF_NAME,D.DEPT_CODE,D.DEPT_NAME 
+		FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON (C.SUB_SEQ=S.SUB_SEQ) JOIN HD_PROFESSOR_TB P ON (C.PROF_ID=P.PROF_ID) 
+		JOIN HD_DEPARTMENT_TB D ON (S.DEPT_CODE=D.DEPT_CODE) WHERE P.DEPT_CODE=#{deptCode} AND C.OPEN_YN='Y'
+	</select>
+	<select id="selectDeptName" parameterType="string" resultType="map">
+		SELECT * FROM HD_DEPARTMENT_TB WHERE DEPT_CODE = #{deptCode}
+	</select>
+	<!-- 강의 자료 게시판 검색 -->
+	<select id="searchData" parameterType="map" resultType="map">
+		SELECT T.*,to_char(PROF_BOARD_DATE,'YYYY-MM-DD') as bodate,(SELECT COUNT(*) FROM HD_PROF_ATTACHMENT_TB 
+		WHERE T.PROF_BOARD_NO=PROF_BOARD_NO) AS ATTACH FROM HD_PROF_BOARD_TB T WHERE 1=1
+		<if test="search != '' and search != null">
+			AND PROF_BOARD_TITLE LIKE '%'||#{search}||'%'
+		</if>
+		 ORDER BY PROF_BOARD_NO DESC
+	</select>
+	<!-- 강의계획서 검색 -->
+	<select id="searchPlan" parameterType="map" resultType='map'>
+		SELECT a.*, to_char(PLAN_DATE,'YYYY-MM-DD') as planenco FROM HD_PROF_PLAN_TB a WHERE 1=1 
+		<if test="typing != '' and typing != null">
+			AND PLAN_SUB_NAME LIKE '%'||#{typing}||'%'
+		</if> 
+		 ORDER BY PLAN_NO DESC
+	</select>
+	<!-- 교수별 강의 내역 -->
+	<select id="profPlanResult" resultType="map">
+		SELECT C.PROF_ID,C.SUB_CODE,C.OPEN_YN,S.SUB_NAME,S.SUB_ROOM,S.SUB_TIME,P.PROF_NAME,P.PHONE,P.EMAIL 
+		FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON C.SUB_SEQ=S.SUB_SEQ JOIN HD_PROFESSOR_TB P ON C.PROF_ID=P.PROF_ID WHERE OPEN_YN='Y'
+	</select>
+	<select id="totalPlanResult" resultType="_int">
+		SELECT COUNT(*) FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON C.SUB_SEQ=S.SUB_SEQ
+		JOIN HD_PROFESSOR_TB P ON C.PROF_ID=P.PROF_ID WHERE OPEN_YN='Y'
+	</select>
+	<!-- 내 강의 내역 -->
+	<select id="myPlanResult" parameterType="string" resultType="map">
+		SELECT C.PROF_ID,C.SUB_CODE,C.OPEN_YN,S.SUB_NAME,S.SUB_ROOM,S.SUB_TIME,P.PROF_NAME,P.PHONE,P.EMAIL 
+		FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON C.SUB_SEQ=S.SUB_SEQ JOIN HD_PROFESSOR_TB P ON C.PROF_ID=P.PROF_ID 
+		WHERE OPEN_YN='Y' AND P.PROF_ID=#{profId}
+	</select>
+ 
+<resultMap id="planBoardMap" type="com.kh.finalProject.professor.model.vo.PlanBoard">
+	<result column="PLAN_NO" property="planNo"/>
+	<result column="PLAN_YEAR" property="planYear"/>
+	<result column="PLAN_SEMESTER" property="planSemester"/>
+	<result column="PLAN_SUB_NAME" property="planSubName"/>
+	<result column="PLAN_SUB_TIME" property="planSubTime"/>
+	<result column="PLAN_SUB_ROOM" property="planSubRoom"/>
+	<result column="PLAN_BOOK_NAME" property="planBookName"/>
+	<result column="PLAN_BOOK_AUTHOR" property="planBookAuthor"/>
+	<result column="PLAN_BOOK_YEAR" property="planBookYear"/>
+	<result column="PLAN_BOOK_WHERE" property="planBookWhere"/>
+	<result column="PLAN_WAY" property="planWay"/>
+	<result column="PLAN_GOAL" property="planGoal"/>
+	<result column="PROF_NAME" property="profName"/>
+	<result column="PLAN_TITLE" property="planTitle"/>
+	<result column="PLAN_CONTENT" property="planContent"/>
+	<result column="PLAN_MTERM" property="planMterm"/>
+	<result column="PLAN_FTERM" property="planFterm"/>
+	<result column="PLAN_ASSIGN" property="planAssign"/>
+	<result column="PLAN_STATUS" property="planStatus"/>
+	<result column="PLAN_DATE" property="planDate"/>
+</resultMap>
+
+<resultMap id="subjectMap" type="com.kh.finalProject.professor.model.vo.Subject">
+	<result column="SUB_CODE" property="subCode"/>
+	<result column="SUB_NAME" property="subName"/>
+	<result column="TARGET_SUBJECT" property="targetSubject"/>
+	<result column="TARGET_GRADE" property="targetGrade"/>
+	<result column="COMPLETE_PT" property="completePt"/>
+	<result column="SUB_TYPE" property="subType"/>
+	<result column="DEPT_CODE" property="deptCode"/>
+	<result column="SUB_DATE" property="subDate"/>
+	<result column="SUB_TIME" property="subTime"/>
+	<result column="SUB_ROOM" property="subRoom"/>
+	<result column="SUB_YEAR" property="subYear"/>
+	<result column="SUB_SEMESTER" property="subSemester"/>
+</resultMap>
+
+<resultMap id="insertClassMap" type="com.kh.finalProject.professor.model.vo.InsertClass">
+	<result column="SUB_CODE" property="subCode"/>
+	<result column="PROF_ID" property="profId"/>
+	<result column="OPEN_YN" property="openYn"/>
+	<result column="CAPACITY" property="capacity"/>
+	<result column="ASSIGN_1" property="assignA"/>
+	<result column="ASSIGN_2" property="assignB"/>
+	<result column="ASSIGN_3" property="assignC"/>
+	<result column="ASSIGN_4" property="assignD"/>
+	<result column="MTERM" property="mTerm"/>
+	<result column="FTERM" property="fTerm"/>
+	<result column="STATUS_GRADE" property="statusGrade"/>
+	<result column="USE_BOOK" property="useBook"/>
+	<result column="BOOK_NAME" property="bookName"/>
+	<result column="EVA_STAN" property="evaStan"/>
+	<result column="OPEN_OTHER" property="openOther"/>
+	<result column="CL_ORIFILENAME" property="clOrifilename"/>
+	<result column="CL_REFILENAME" property="clRefilename"/>
+	<result column="PRE_CAPA" property="preCapa"/>
+</resultMap>
+
+ <resultMap id="professorResult1" type="professor">
+	<result column="PROF_ID" property="profId" />
+	<result column="PROF_PW" property="profPw" />
+	<result column="PROF_NAME" property="profName" />
+	<result column="PROF_SSN" property="profSsn" />
+	<result column="DEPT_CODE" property="deptCode" />	
+	<result column="EMAIL" property="email" />	
+	<result column="PHONE" property="phone" />	
+	<result column="ADDRESS" property="address" />	
+	<result column="GENDER" property="gender" />	
+	<result column="PROF_ENROLL" property="profEnroll" />	
+</resultMap>
+
+<resultMap type="com.kh.finalProject.professor.model.vo.ProfessorBoard" id="professorBoardMap">
+	<result column="PROF_BOARD_NO" property="profBoardNo"/>
+	<result column="PROF_NAME" property="profName"/>
+	<result column="PROF_BOARD_TYPE" property="profBoardType"/>
+	<result column="PROF_BOARD_TITLE" property="profBoardTitle"/>
+	<result column="PROF_BOARD_CONTENT" property="profBoardContent"/>
+	<result column="PROF_BOARD_DATE" property="profBoardDate"/>
+	<result column="PROF_BOARD_NOTICE" property="profBoardNotice"/>
+	<result column="PROF_ID" property="profId"/>
+</resultMap>
+
+<resultMap type="com.kh.finalProject.professor.model.vo.ProfBoardAttachment" id="profBoardAttachment">
+	<result column="PROF_BOARD_NO" property="profBoardNo"/>
+	<result column="BOARD_FILENO" property="boardFileNo"/>
+	<result column="BOARD_ORIFILENAME" property="boardOrifilename"/>
+	<result column="BOARD_REFILENAME" property="boardRefilename"/>
+	<result column="BOARD_UPLOADDATE" property="boardUploaddate"/>
+</resultMap>
+
+	
+</mapper>

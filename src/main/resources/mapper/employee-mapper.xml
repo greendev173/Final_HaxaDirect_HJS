@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="employee">
+	<select id="selectOne" parameterType="employee" resultMap="employeeResult">
+  		SELECT * FROM HD_PROFESSOR_TB WHERE prof_Id=#{empId} AND SUBSTR(prof_Id,1,1)='E'
+	</select>
+	
+	<select id="selectEmpList" resultType="map"  parameterType="string">
+		SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'E'
+	</select>
+	
+	<select id="empListCount" resultType="_int"  parameterType="string">
+		SELECT NVL(COUNT(*),1) FROM HD_PROFESSOR_TB WHERE SUBSTR(PROF_ID,1,1) = 'E'
+	</select>
+	
+	<select id="changeEmp" parameterType="string" resultType="map">
+			SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'E' AND DEPT_CODE = #{deptCode} ORDER BY PROF_NAME
+			<if test="value != null">
+			AND DEPT_CODE = #{value}
+			</if>
+			ORDER BY DEPT_CODE
+	</select>
+	
+	<select id="changeEmpCount" resultType="_int" parameterType="string">
+		SELECT NVL()COUNT(*),1) FROM HD_PROFESSOR_TB WHERE SUBSTR(PROF_ID,1,1) = 'E' AND DEPT_CODE = #{deptCode}
+		<if test="value != null">
+			 AND DEPT_CODE = #{value}
+		</if>
+	</select>
+	
+	<select id="selectEmpLastNum" resultType="_int" parameterType="string">
+		SELECT NVL(MAX(SUBSTR(PROF_ID,9,2)),0) FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'E' AND DEPT_CODE = #{deptCode}
+	</select>
+	
+	<insert id="insertNewEmp" parameterType="employee">
+        INSERT INTO HD_PROFESSOR_TB VALUES(#{empId},#{empPw},#{empName},#{empSsn},#{deptCode},#{email},#{phone},#{address},#{gender},DEFAULT,'profImg.PNG')		
+	</insert>
+	
+	
+	<select id="empLastNumCheck" parameterType="string" resultType="_int">
+		SELECT NVL(COUNT(*),1) FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUBSTR(PROF_ID,1,1) = 'E' AND DEPT_CODE = #{deptCode}
+	</select>
+	
+	<select id="deptEmp" resultType="map" parameterType="map">
+  		SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+		WHERE SUBSTR(PROF_ID,1,1) = 'E'
+ 		<if test="deptCode != null">
+		AND DEPT_CODE = #{deptCode}
+		</if>
+		<if test="search != null">
+		AND PROF_ID LIKE '%${search}%' OR PROF_NAME LIKE '%${search}%'
+		</if>
+		 ORDER BY PROF_ENROLL DESC, DEPT_CODE
+	</select>
+	
+	<select id="deptEmpCount" resultType="_int" parameterType="map">
+  		SELECT NVL(COUNT(*),0) FROM HD_PROFESSOR_TB
+  		WHERE SUBSTR(PROF_ID,1,1) = 'E'
+  		<if test="deptCode != null">
+		AND DEPT_CODE = #{deptCode}
+		</if>
+		<if test="search != null">
+		AND PROF_ID LIKE '%${search}%' OR PROF_NAME LIKE '%${search}%'  
+		</if>
+	</select>
+	
+	<select id="searchStuList" parameterType="string" resultType="map">
+		SELECT STU_NO AS PROF_ID, STU_NAME AS PROF_NAME, DEPT_NAME, STU_TEL AS PHONE, STU_EMAIL AS EMAIL, STU_ADDR AS ADDRESS FROM HD_STUDENT_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+ 		WHERE STU_NO LIKE '%${value}%' OR STU_NAME LIKE '%${value}%'
+		 ORDER BY ENTER_DATE DESC, DEPT_CODE
+	</select>
+	
+	<select id="searchstuCount" parameterType="string"  resultType="_int">
+	SELECT NVL(COUNT(*),0) FROM HD_STUDENT_TB
+  		WHERE STU_NO LIKE '%${value}%' OR STU_NAME LIKE '%${value}%'   <!-- '%'||#searchKeyword#||'%' --> 
+	</select>
+
+	<select id="searchProfList" parameterType="string" resultType="map">
+	SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+		WHERE SUBSTR(PROF_ID,1,1) = 'P'
+		AND PROF_ID LIKE '%${value}%' OR PROF_NAME LIKE '%${value}%'
+		 ORDER BY PROF_ENROLL DESC, DEPT_CODE
+	</select>
+
+	<select id="searchProfCount" parameterType="string"  resultType="_int">
+	SELECT NVL(COUNT(*),0) FROM HD_PROFESSOR_TB
+  		WHERE SUBSTR(PROF_ID,1,1) = 'P'
+		AND PROF_ID LIKE '%${value}%' OR PROF_NAME LIKE '%${value}%'  
+	</select>
+
+	<select id="searchEmpList" parameterType="string" resultType="map">
+		SELECT * FROM HD_PROFESSOR_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+		WHERE SUBSTR(PROF_ID,1,1) = 'E'
+		AND PROF_ID LIKE '%${value}%' OR PROF_NAME LIKE '%${value}%'
+		 ORDER BY PROF_ENROLL DESC, DEPT_CODE
+	</select>
+
+	<select id="searchEmpCount" parameterType="string" resultType="_int">
+	SELECT NVL(COUNT(*),0) FROM HD_PROFESSOR_TB
+  		WHERE SUBSTR(PROF_ID,1,1) = 'E'
+		AND PROF_ID LIKE '%${value}%' OR PROF_NAME LIKE '%${value}%'  
+	</select>
+	
+	<resultMap id="employeeResult" type="employee">
+		<result column="PROF_ID" property="empId" />
+		<result column="PROF_PW" property="empPw" />
+		<result column="PROF_NAME" property="empName" />
+		<result column="PROF_SSN" property="empSsn" />
+		<result column="DEPT_CODE" property="deptCode" />	
+		<result column="EMAIL" property="email" />	
+		<result column="PHONE" property="phone" />	
+		<result column="ADDRESS" property="address" />	
+		<result column="GENDER" property="gender" />	
+		<result column="PROF_ENROLL" property="empEnroll" />	
+	</resultMap>
+</mapper>

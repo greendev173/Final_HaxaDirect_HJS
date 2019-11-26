@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cal">
+
+	<select id="getCalendar" parameterType="map" resultMap="scheduleResult">
+	SELECT * FROM HD_PLAN_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE PLAN_START_DATE BETWEEN #{start} AND #{end} 
+	<if test="deptCode != null">
+	AND DEPT_CODE = #{deptCode} OR SUBSTR(DEPT_CODE,1,1) = '0'
+	</if>
+	</select>
+
+	<insert id="insertPlan" parameterType="map">
+	INSERT INTO HD_PLAN_TB VALUES(PLAN_NO_SEQ.NEXTVAL, #{title}, #{start} ,#{end}, #{deptCode})
+	</insert>
+
+	<delete id="deleteCalendar" parameterType="map">
+	DELETE FROM HD_PLAN_TB WHERE PLAN_NAME = #{title} AND PLAN_START_DATE = #{start} AND PLAN_END_DATE = #{end} AND DEPT_CODE = #{deptCode}
+	</delete>
+
+  	<resultMap id="scheduleResult" type="schedule">
+		<result column="PLAN_NO_SEQ" property="planNo" />
+		<result column="PLAN_NAME" property="planName" />
+		<result column="PLAN_START_DATE" property="stDate" />
+		<result column="PLAN_END_DATE" property="enDate" />
+		<result column="DEPT_CODE" property="deptCode" />
+		<result column="DEPT_NAME" property="deptName" />
+		</resultMap>
+
+  
+</mapper>

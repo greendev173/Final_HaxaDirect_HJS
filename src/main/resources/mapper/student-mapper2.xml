@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="student2">
+	
+	<!-- 서브퀴리를 통해 이수구분을 받아오는 HD_SUBJECT_TB에서 과목종류 SUB_TYPE, 이수학점 COMPLETE_PT 을 조회해와야한다. -->
+	<select id="selectGradeList" parameterType="string" resultMap="GradeResult">
+		SELECT A.*, B.SUB_TYPE, C.PROF_NAME FROM HD_GRADE_TB A 
+		JOIN (SELECT SUB_CODE, SUB_TYPE FROM HD_SUBJECT_TB) B 
+		ON (A.SUB_CODE = B.SUB_CODE)
+		JOIN (SELECT PROF_ID, PROF_NAME FROM HD_PROFESSOR_TB) C
+		ON (A.PROF_ID = C.PROF_ID)
+		WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+		ORDER BY ACA_YEAR_SEM ASC, SUB_NAME ASC
+	</select>
+	
+	<select id="selectsubType" parameterType="string" resultMap="GradeResult">
+		SELECT A.*, B.SUB_TYPE, C.PROF_NAME FROM HD_GRADE_TB A 
+		JOIN (SELECT SUB_CODE, SUB_TYPE FROM HD_SUBJECT_TB) B 
+		ON (A.SUB_CODE = B.SUB_CODE)
+		JOIN (SELECT PROF_ID, PROF_NAME FROM HD_PROFESSOR_TB) C
+		ON (A.PROF_ID = C.PROF_ID)
+		WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+		ORDER BY SUB_TYPE ASC, SUB_NAME ASC
+	</select>
+	
+	<select id="selectsubName" parameterType="string" resultMap="GradeResult">
+		SELECT A.*, B.SUB_TYPE, C.PROF_NAME FROM HD_GRADE_TB A 
+		JOIN (SELECT SUB_CODE, SUB_TYPE FROM HD_SUBJECT_TB) B 
+		ON (A.SUB_CODE = B.SUB_CODE)
+		JOIN (SELECT PROF_ID, PROF_NAME FROM HD_PROFESSOR_TB) C
+		ON (A.PROF_ID = C.PROF_ID)
+		WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+		ORDER BY SUB_NAME ASC, ACA_YEAR_SEM ASC
+	</select>
+	
+	<select id="selectacaYearSem" parameterType="string" resultMap="GradeResult">
+		SELECT A.*, B.SUB_TYPE, C.PROF_NAME FROM HD_GRADE_TB A 
+		JOIN (SELECT SUB_CODE, SUB_TYPE FROM HD_SUBJECT_TB) B 
+		ON (A.SUB_CODE = B.SUB_CODE)
+		JOIN (SELECT PROF_ID, PROF_NAME FROM HD_PROFESSOR_TB) C
+		ON (A.PROF_ID = C.PROF_ID)
+		WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+		ORDER BY ACA_YEAR_SEM ASC, SUB_NAME ASC
+	</select>
+	
+	<!-- <select id="gradeAYS" parameterType="string" resultType="map">
+		SELECT ACA_YEAR_SEM , SUM(RCV_CREDITS) "ApplicationCredit" , SUM(RCV_CREDITS) "CreditAcquired", TRUNC(AVG(GRADE),2) "AverageRatingF"
+		FROM HD_GRADE_TB 
+		WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+		GROUP BY ACA_YEAR_SEM
+	</select>
+	
+	<select id="gradeAvg" parameterType="string" resultType="map">
+		SELECT TRUNC(AVG(GRADE),2) "AverageRating"
+        FROM HD_GRADE_TB
+        WHERE GRADE > 0 AND STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+        GROUP BY ACA_YEAR_SEM
+	</select> -->
+	
+	<select id="SemesterGrades" parameterType="string" resultType="map">
+		SELECT ACA_YEAR_SEM ,
+        SUM(RCV_CREDITS) "ApplicationCredit", 
+        ROUND(
+                (SELECT SUM(RCV_CREDITS)
+                FROM HD_GRADE_TB A1
+                WHERE A1.ACA_YEAR_SEM = p2.ACA_YEAR_SEM AND A1.GRADE > 0 AND STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+                )) "CreditAcquired",
+        ROUND(
+                 (SELECT  AVG( GRADE )
+                  FROM    HD_GRADE_TB p1
+                  WHERE   p1.ACA_YEAR_SEM = p2.ACA_YEAR_SEM AND p1.GRADE > 0 AND STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+                 ), 2 ) "AverageRating",
+        TRUNC(AVG(GRADE),2) "AverageRatingF",
+        RANK() OVER(ORDER BY AVG(GRADE) DESC) AS "ranking",
+        COUNT(
+                (SELECT COUNT(DISTINCT STU_NO)
+                FROM HD_GRADE_TB P3
+                WHERE p3.ACA_YEAR_SEM = p2.ACA_YEAR_SEM AND STU_NO LIKE '%'||SUBSTR(stu_no,6,8)||'%' AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+                )) "Totalperson"
+		FROM HD_GRADE_TB p2
+		WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+		GROUP BY ACA_YEAR_SEM
+	</select>
+	
+	<select id="selectGradeListSubType" parameterType="string" resultType="map">
+		SELECT SUBSTR(aca_year_sem,1,4) as year,
+        SUBSTR(aca_year_sem,6) as semester,
+        (select DECODE(sum(rcv_credits),0,0,NULL, 0,sum(rcv_credits)) from hd_subject_tb
+        join hd_grade_tb using(sub_code) 
+        where sub_type='전공선택' AND hd_grade_tb.aca_year_sem=MAIN.aca_year_sem and STU_NO=#{stuNo} AND GRADE NOT LIKE '0'
+        and SUBSTR(stu_no,6,8)=SUBSTR(sub_code,1,3)) AS MAJORSELECT,
+        (select DECODE(sum(rcv_credits),0,0,NULL, 0,sum(rcv_credits)) 
+            from hd_subject_tb
+            join hd_grade_tb using(sub_code) 
+            where sub_type='전공필수' AND hd_grade_tb.aca_year_sem=MAIN.aca_year_sem and STU_NO=#{stuNo} AND GRADE NOT LIKE '0'
+             and SUBSTR(stu_no,6,8)=SUBSTR(sub_code,1,3)
+            ) AS MAJORNEED,
+        (select DECODE(sum(rcv_credits),0,0,NULL, 0,sum(rcv_credits)) from hd_subject_tb
+        join hd_grade_tb using(sub_code) 
+        where sub_type='교양선택' AND hd_grade_tb.aca_year_sem=MAIN.aca_year_sem and STU_NO=#{stuNo} AND GRADE NOT LIKE '0'
+         ) AS ELECTRIVESELECT,
+        (select DECODE(sum(rcv_credits),0,0,NULL, 0,sum(rcv_credits)) from hd_subject_tb
+        join hd_grade_tb using(sub_code) 
+        where sub_type='교양필수' AND hd_grade_tb.aca_year_sem=MAIN.aca_year_sem and STU_NO=#{stuNo} AND GRADE NOT LIKE '0'
+         ) AS ELECTRIVENEED,
+        (select DECODE(sum(rcv_credits),0,0,NULL, 0,sum(rcv_credits)) 
+            from hd_subject_tb
+            join hd_grade_tb using(sub_code) 
+            where sub_type like '전공%' AND hd_grade_tb.aca_year_sem=MAIN.aca_year_sem and STU_NO=#{stuNo} AND GRADE NOT LIKE '0'
+            and SUBSTR(stu_no,6,8)!=SUBSTR(sub_code,0,3)) AS OTHER
+	FROM (SELECT * from hd_grade_tb join hd_subject_tb using(sub_code)) MAIN
+	WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM NOT LIKE #{acaYearSem}
+	GROUP BY (ACA_YEAR_SEM)
+	ORDER BY 1,2
+	</select>
+	
+	<insert id="insertRequest" parameterType="request">
+		INSERT INTO HD_REQUEST_TB VALUES(#{stuNo},#{reqDate},#{reqTitle},#{reqContent},#{acaYearSem},#{profId},#{subCode},DEFAULT,NULL,#{profName})
+	</insert> 
+	
+	<insert id="insertProfAssess" parameterType="profassess">
+		INSERT INTO HD_PROF_ASSESS_TB VALUES(#{acaYearSem},#{subCode},#{profId},#{evalDate},#{evalComment},#{evalPoint},#{stuNo})
+	</insert>
+	
+	<!-- <select id="selectRequestList" parameterType="string" resultType="map">
+		SELECT * FROM HD_REQUEST_TB
+	</select> -->
+	
+	<select id="selectGradeNow" parameterType="infoForSearchGrade" resultMap="GradeResult">
+		SELECT A.ACA_YEAR_SEM, A.SUB_CODE, A.SUB_NAME, A.PROF_ID, A.GRADE, A.STU_NO, A.RETAKE, A.RCV_CREDITS, B.SUB_TYPE, C.PROF_NAME, R.REQ_DATE, R.REQ_TITLE, R.REQ_CONTENT, 
+		R.REQ_ANSWER, REQ_YN, P.EVAL_DATE, P.EVAL_COMMENT, P.EVAL_POINT
+		FROM (SELECT * FROM HD_GRADE_TB WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM=#{acaYearSem}) A 
+		JOIN (SELECT SUB_CODE, SUB_TYPE FROM HD_SUBJECT_TB) B 
+		ON (A.SUB_CODE = B.SUB_CODE)
+		JOIN (SELECT PROF_ID, PROF_NAME FROM HD_PROFESSOR_TB) C
+		ON (A.PROF_ID = C.PROF_ID)
+		LEFT JOIN HD_REQUEST_TB R
+		ON (A.STU_NO=R.STU_NO AND A.ACA_YEAR_SEM=R.ACA_YEAR_SEM AND A.PROF_ID=R.PROF_ID)
+		LEFT JOIN HD_PROF_ASSESS_TB P
+		ON (A.STU_NO=P.STU_NO AND A.ACA_YEAR_SEM=P.ACA_YEAR_SEB AND A.PROF_ID=P.PROF_ID)
+		ORDER BY A.ACA_YEAR_SEM DESC, A.SUB_NAME ASC
+	</select>
+	
+<!-- 	<resultMap type="reauest" id="RequestResult">
+		<result column="STU_NO" property="stuNo"/>
+		<result column="REQ_DATE" property="reqDate"/>
+		<result column="REQ_TITLE" property="reqTitle"/>
+		<result column="REQ_CONTENT" property="reqContent"/>
+		<result column="ACA_YEAR_SEM" property="acaYearSem"/>
+		<result column="PROF_ID" property="profId"/>
+		<result column="SUB_CODE" property="subCode"/>
+		<result column="REQ_YN" property="reqYn"/>
+		<result column="REQ_ANSWER" property="reqAnswer"/>
+		<result column="PROF_NAME" property="profName"/>
+	</resultMap> -->
+	
+	
+	<!-- resultMap에 개념은 vo객체와 DB에 있는 컬럼명이 맞지 않을경우 매칭이 안되므로 그 매칭을 해주기 위해 설정 해주는 것. -->
+	<resultMap type="grade" id="GradeResult">
+		<!-- typeHandler="" 은 뭐지? -->
+		<result column="ACA_YEAR_SEM" property="acaYearSem"/>
+		<result column="SUB_CODE" property="subCode"/>
+		<result column="SUB_NAME" property="subName"/>
+		<result column="PROF_ID" property="profId"/>
+		<!-- <result column="MTERM" property="mterm"/>
+		<result column="FTERM" property="fterm"/>
+		<result column="ASSIGN_1" property="assign1"/>
+		<result column="ASSIGN_2" property="assign2"/>
+		<result column="ASSIGN_3" property="assign3"/>
+		<result column="ASSIGN_4" property="assign4"/> -->
+		<result column="GRADE" property="grade"/>
+		<result column="STU_NO" property="stuNo"/>
+		<result column="RETAKE" property="retake"/>
+		<result column="RCV_CREDITS" property="rcvCredits"/>
+		<result column="SUB_TYPE" property="subType"/>
+		<result column="PROF_NAME" property="profName"/>
+		<result column="REQ_DATE" property="reqDate"/>
+		<result column="REQ_TITLE" property="reqTitle"/>
+		<result column="REQ_CONTENT" property="reqContent"/>
+		<result column="REQ_ANSWER" property="reqAwswer"/>
+		<result column="REQ_YN" property="reqYn"/>
+		<result column="EVAL_DATE" property="evalDate"/>
+		<result column="EVAL_COMMENT" property="evalComment"/>
+		<result column="EVAL_POINT" property="evalPoint"/>		
+	</resultMap>
+	
+
+
+  
+</mapper>

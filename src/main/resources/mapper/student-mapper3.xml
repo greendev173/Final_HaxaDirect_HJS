@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="student3">
+	
+	<select id="selectTuitionOne" parameterType="stuTuition" resultMap="tuitionResult">
+		SELECT T.*, S.STU_NAME, D.DEPT_NAME, 
+		S.STU_SSN AS BIRTHDAY
+		FROM HD_STU_TUITION_TB T JOIN HD_STUDENT_TB S 
+		ON T.STU_NO=#{stuNo} AND T.STU_NO=S.STU_NO AND ACA_YEAR_SEM=#{acaYearSem}
+		JOIN HD_DEPARTMENT_TB D
+		ON S.DEPT_CODE=D.DEPT_CODE
+  	</select>
+  	
+  	<select id="selectTuitionCertList" parameterType="string" resultMap="tuitionResult">
+	  	SELECT STU_NO, ACA_YEAR_SEM, PAYMENT_STAT FROM HD_STU_TUITION_TB
+		WHERE STU_NO=#{studentNo}
+		ORDER BY 2 DESC
+	</select>
+	
+	<select id="selectBasicStudentInfo" parameterType="string" resultMap="tuitionResult">
+		SELECT S.STU_NO, S.STU_NAME, S.STU_TEL, S.STU_ADDR, S.STU_EMAIL, D.DEPT_NAME, 
+		S.STU_SSN AS BIRTHDAY
+		FROM (SELECT * FROM HD_STUDENT_TB WHERE STU_NO=#{studentNo}) S 
+		JOIN HD_DEPARTMENT_TB D
+		ON S.DEPT_CODE=D.DEPT_CODE
+	</select>
+	
+	<update id="updateTuitionOne" parameterType="stuTuition">
+		UPDATE HD_STU_TUITION_TB SET PAYMENT_STAT='Y', PAYMENT_DATE=SYSDATE WHERE STU_NO=#{stuNo} AND ACA_YEAR_SEM=#{acaYearSem}
+	</update>
+	
+	<update id="updateStuYearSem" parameterType="student">
+		UPDATE HD_STUDENT_TB SET STU_YEAR_SEM=#{stuYearSem} WHERE STU_NO=#{stuNo}
+	</update>
+	
+  	<select id="selectGraduationCon" parameterType="string" resultMap="graduationConResult">
+  		SELECT GC.*, S.STU_NAME, S.STU_SSN, D.DEPT_NAME
+		FROM HD_GRADUATION_CON_TB GC
+		JOIN HD_STUDENT_TB S
+		ON S.STU_NO=#{studentNo}
+		AND GC.STU_NO=S.STU_NO
+		JOIN HD_DEPARTMENT_TB D
+		ON S.DEPT_CODE=D.DEPT_CODE
+  	</select>
+  	
+  	<select id="selectStuYearSem" parameterType="string" resultType="string">
+  		SELECT STU_YEAR_SEM FROM HD_STUDENT_TB WHERE STU_NO=#{studentNo}
+  	</select>
+  	
+  	<select id="selectMySchedule" parameterType="myScheduleForInfo" resultMap="myScheduleResult">
+  		SELECT S.SUB_YEAR||'-'||S.SUB_SEMESTER AS ACA_YEAR_SEM, S.SUB_NAME, S.SUB_DATE, S.SUB_TIME, S.SUB_ROOM, T.PROF_NAME
+		FROM (SELECT SR.*, C.SUB_CODE, C.PROF_ID, P.PROF_NAME
+		FROM (SELECT STU_NO, SUB_SEQ
+		FROM HD_SUB_REQ_TB WHERE STU_NO=#{stuNo}) SR
+		JOIN HD_CLASS_TB C
+		ON SR.SUB_SEQ=C.SUB_SEQ
+		JOIN HD_PROFESSOR_TB P
+		ON C.PROF_ID=P.PROF_ID) T
+		JOIN HD_SUBJECT_TB S
+		ON S.SUB_SEQ=T.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+  	</select>
+  	
+  	<select id="selectMyClassList" parameterType="myScheduleForInfo" resultMap="myClassResult">
+	  	SELECT SR.STU_NO, SR.SUB_SEQ, S.SUB_NAME, S.SUB_CODE, S.SUB_YEAR, S.SUB_SEMESTER, S.SUB_DATE, S.SUB_TIME
+		FROM (SELECT * 
+		FROM HD_SUB_REQ_TB 
+		WHERE STU_NO=#{stuNo}) SR
+		JOIN HD_CLASS_TB C
+		ON SR.SUB_SEQ=C.SUB_SEQ
+		JOIN HD_SUBJECT_TB S
+		ON SR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+  	</select>
+  	
+  	<select id="selectAsgmtBoardList" parameterType="myScheduleForInfo" resultMap="assignmentRegisterResult">
+  		SELECT S.SUB_NAME, AR.*
+		FROM (SELECT * 
+		FROM HD_SUB_REQ_TB 
+		WHERE STU_NO=#{stuNo} AND SUB_SEQ=#{subSeq}) SR
+		JOIN HD_CLASS_TB C
+		ON SR.SUB_SEQ=C.SUB_SEQ
+		JOIN HD_SUBJECT_TB S
+		ON SR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		JOIN HD_ASGMT_REGD_TB AR
+		ON SR.SUB_SEQ=AR.SUB_SEQ
+		ORDER BY ASGMT_REGD_DATE DESC
+  	</select>
+  	
+  	<select id="selectAsgmtBoardCount" parameterType="myScheduleForInfo" resultType="_int">
+  		SELECT COUNT(*)
+		FROM (SELECT * 
+		FROM HD_SUB_REQ_TB 
+		WHERE STU_NO=#{stuNo} AND SUB_SEQ=#{subSeq}) SR
+		JOIN HD_CLASS_TB C
+		ON SR.SUB_SEQ=C.SUB_SEQ
+		JOIN HD_SUBJECT_TB S
+		ON SR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		JOIN HD_ASGMT_REGD_TB AR
+		ON SR.SUB_SEQ=AR.SUB_SEQ
+  	</select>
+  	
+  	<select id="selectAssignment" parameterType="myScheduleForInfo" resultMap="assignmentRegisterResult">
+  		SELECT S.SUB_NAME, P.PROF_NAME, AR.*
+		FROM (SELECT * 
+		FROM HD_SUB_REQ_TB 
+		WHERE STU_NO=#{stuNo} AND SUB_SEQ=#{subSeq}) SR
+		JOIN HD_CLASS_TB C
+		ON SR.SUB_SEQ=C.SUB_SEQ
+		JOIN HD_PROFESSOR_TB P
+		ON C.PROF_ID=P.PROF_ID
+		JOIN HD_SUBJECT_TB S
+		ON SR.SUB_SEQ=S.SUB_SEQ
+		AND S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		JOIN HD_ASGMT_REGD_TB AR
+		ON SR.SUB_SEQ=AR.SUB_SEQ
+		AND AR.ASGMT_NO=${asgmtNo}
+  	</select>
+  	
+  	<update id="updateAsgmtReadCount" parameterType="myScheduleForInfo">
+  		UPDATE 
+		(SELECT AR.*, S.SUB_NAME 
+		FROM (SELECT SUB_SEQ, ASGMT_NO, READ_COUNT FROM HD_ASGMT_REGD_TB WHERE SUB_SEQ=#{subSeq} AND ASGMT_NO=${asgmtNo}) AR 
+		JOIN HD_CLASS_TB C
+		ON C.SUB_SEQ=AR.SUB_SEQ
+		JOIN HD_SUBJECT_TB S 
+		ON S.SUB_YEAR=#{acaYear}
+		AND S.SUB_SEMESTER=#{acaSemester}
+		AND C.SUB_SEQ=S.SUB_SEQ) TOTAL
+		SET TOTAL.READ_COUNT=READ_COUNT+1
+  	</update>
+  	
+  	<resultMap id="tuitionResult" type="stuTuition">
+		<result column="STU_NO" property="stuNo" />
+		<result column="STU_NAME" property="stuName" />	
+		<result column="ACA_YEAR_SEM" property="acaYearSem" />
+		<result column="STU_TEL" property="stuTel" />	
+		<result column="TUITION" property="tuition" />
+		<result column="PAYMENT_STAT" property="paymentStat" />
+		<result column="PAYMENT_DATE" property="paymentDate" />	
+		<result column="DUE_DATE" property="dueDate" />	
+		<result column="REDUCTION_STAT" property="reductionStat" />
+		<result column="DEPT_NAME" property="deptName" />	
+		<result column="BIRTHDAY" property="birthday" />		
+		<result column="STU_ADDR" property="stuAddr" />
+		<result column="STU_EMAIL" property="stuEmail" />
+	</resultMap>
+	
+	<resultMap id="graduationConResult" type="graduationCon">
+		<result column="STU_NO" property="stuNo" />
+		<result column="PSBL_MAJ_CR" property="psblMajCr" />
+		<result column="MY_MAJ_CR" property="myMajCr" />
+		<result column="PSBL_LIB_CR" property="psblLibCr" />
+		<result column="MY_LIB_CR" property="myLibCr" />
+		<result column="STU_NAME" property="stuName" />	
+		<result column="STU_SSN" property="stuSSn" />
+		<result column="DEPT_NAME" property="deptName" />	
+	</resultMap>
+	
+	
+	<resultMap id="myScheduleResult" type="mySchedule">
+		<result column="ACA_YEAR_SEM" property="acaYearSem" />
+		<result column="SUB_NAME" property="subName" />
+		<result column="SUB_DATE" property="subDate" />
+		<result column="SUB_TIME" property="subTime" />
+		<result column="SUB_ROOM" property="subRoom" />
+		<result column="PROF_NAME" property="profName" />	
+	</resultMap>
+	
+	<resultMap id="myClassResult" type="myClass">
+		<result column="STU_NO" property="stuNo" />
+		<result column="SUB_SEQ" property="subSeq" />
+		<result column="SUB_NAME" property="subName" />
+		<result column="SUB_CODE" property="subCode" />
+		<result column="SUB_YEAR" property="subYear" />
+		<result column="SUB_SEMESTER" property="subSemester" />
+		<result column="SUB_DATE" property="subDate" />	
+		<result column="SUB_TIME" property="subTime" />		
+	</resultMap>
+
+  	<resultMap id="assignmentRegisterResult" type="assignmentRegister">
+		<result column="PROF_NAME" property="profName" />
+		<result column="SUB_NAME" property="subName" />
+		<result column="ASGMT_SEQ" property="asgmtSeq" />
+		<result column="SUB_SEQ" property="subSeq" />
+		<result column="PROF_ID" property="profId" />
+		<result column="ASGMT_NO" property="asgmtNo" />
+		<result column="ASGMT_REGD_TITLE" property="asgmtRegdTitle" />
+		<result column="ASGMT_REGD_CONTENT" property="asgmtRegdContent" />
+		<result column="ASGMT_REGD_DATE" property="asgmtRegdDate" />
+		<result column="READ_COUNT" property="readCount" />
+		<result column="ASGMT_REGD_ORIFILE_NAME" property="asgmtRegdOrifileName" />
+		<result column="ASGMT_REGD_REFILE_NAME" property="asgmtRegdRefileName" />
+	</resultMap>
+	
+</mapper>

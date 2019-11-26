@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="school">
+	<select id="colCount" resultType="_int">
+		select count(*) from hd_college_tb WHERE COL_CODE != 'Z' AND COL_OPEN='Y'
+	</select>
+
+	<select id="deptCount" resultType="_int">
+		select count(*) from hd_department_tb WHERE COL_CODE != 'Z' AND DEPT_OPEN='Y'
+	</select>
+	
+	<select id="colList" resultMap="collegeMap">
+		SELECT * FROM HD_COLLEGE_TB WHERE COL_CODE != 'Z'AND COL_OPEN='Y' ORDER BY COL_CODE
+	</select>
+	
+	<select id="colList1" resultMap="collegeMap">
+		SELECT * FROM HD_COLLEGE_TB WHERE COL_CODE != 'Z' ORDER BY COL_CODE
+	</select>
+	
+	<select id="deptList" resultType="map">
+		SELECT * FROM HD_DEPARTMENT_TB JOIN HD_COLLEGE_TB USING(COL_CODE) WHERE COL_CODE != 'Z' AND DEPT_OPEN='Y' ORDER BY DEPT_CODE
+	</select>
+	
+	<insert id="colInsert" parameterType="college">
+		INSERT INTO HD_COLLEGE_TB VALUES(#{colCode},#{colName},DEFAULT)
+	</insert>
+	
+	<select id="deptList1" resultMap="departmentMap" parameterType="String">
+		SELECT * FROM HD_DEPARTMENT_TB WHERE COL_CODE != 'Z' AND COL_CODE=#{colCode} AND DEPT_OPEN='Y' ORDER BY DEPT_CODE
+	</select>
+	
+	<select id="deptList2" resultType="map" parameterType="String">
+		SELECT * FROM HD_DEPARTMENT_TB JOIN HD_COLLEGE_TB USING(COL_CODE) WHERE COL_CODE != 'Z' AND COL_CODE=#{colCode} AND DEPT_OPEN='Y' ORDER BY DEPT_CODE
+	</select>
+	
+	<insert id="deptInsert" parameterType="department">
+		INSERT INTO HD_DEPARTMENT_TB VALUES(#{deptCode},#{deptName},#{colCode},DEFAULT)
+	</insert>
+	
+	<update id="deleteCol" parameterType="String">
+		UPDATE HD_COLLEGE_TB SET COL_OPEN='N' WHERE COL_CODE=#{colCode}
+	</update>
+	
+	<update id="deleteDept" parameterType="String">
+		UPDATE HD_DEPARTMENT_TB SET DEPT_OPEN='N' WHERE DEPT_CODE=#{deptCode}
+	</update>
+	
+	<update id="updateCol" parameterType="college">
+		UPDATE HD_COLLEGE_TB SET COL_NAME=#{colName} WHERE COL_CODE=#{colCode}
+	</update>
+	
+	<update id="updateDept" parameterType="department">
+		UPDATE HD_DEPARTMENT_TB SET DEPT_NAME=#{deptName} WHERE DEPT_CODE=#{deptCode}
+	</update>
+	
+	<select id="subRoomUseList" parameterType="subject" resultType="map">
+		SELECT SUB_NAME, COMPLETE_PT, A.DEPT_CODE, TARGET_GRADE, SUB_DATE, SUB_TIME, PROF_ID, PROF_NAME, B.DEPT_NAME
+		FROM HD_SUBJECT_TB A
+		JOIN HD_CLASS_TB C ON(A.SUB_SEQ=C.SUB_SEQ) 
+		JOIN HD_PROFESSOR_TB D USING(PROF_ID)
+		LEFT OUTER JOIN HD_DEPARTMENT_TB B ON(A.DEPT_CODE=B.DEPT_CODE)
+		WHERE SUB_YEAR=#{subYear} AND SUB_SEMESTER=${subSemester} AND SUB_ROOM=#{subRoom} AND OPEN_YN='Y'
+	</select>
+	
+	<select id="empIdSearchModal" parameterType="map" resultType="map">
+		SELECT PROF_ID, PROF_NAME, EMAIL FROM HD_PROFESSOR_TB WHERE EMAIL=#{searchEmail}
+		<if test="searchName != null">
+			AND PROF_NAME=#{searchName}
+		</if>
+		<if test="searchNo != null">
+			AND PROF_ID=#{searchNo}
+		</if>
+	</select>
+	
+	
+	
+	<resultMap id="subjectMap" type="subject">
+	  	<result column="SUB_SEQ" property="subSeq"/>
+		<result column="SUB_CODE" property="subCode"/>
+		<result column="SUB_NAME" property="subName"/>
+		<result column="TARGET_SUBJECT" property="targetSubject"/>
+		<result column="TARGET_DEPT" property="targetDept"/>
+		<result column="TARGET_GRADE" property="targetGrade"/>
+		<result column="COMPLETE_PT" property="completePt"/>
+		<result column="SUB_TYPE" property="subType"/>
+		<result column="DEPT_CODE" property="deptCode"/>
+		<result column="SUB_DATE" property="subDate"/>
+		<result column="SUB_TIME" property="subTime"/>
+		<result column="SUB_ROOM" property="subRoom"/>
+		<result column="SUB_YEAR" property="subYear"/>
+		<result column="SUB_SEMESTER" property="subSemester"/>
+	</resultMap>
+
+	<resultMap type="department" id="departmentMap">
+		<result column="DEPT_CODE" property="deptCode"/>
+		<result column="DEPT_NAME" property="deptName"/>
+		<result column="COL_CODE" property="colCode"/>
+		<result column="DEPT_OPEN" property="deptOpen"/>
+	</resultMap>
+	
+	<resultMap type="college" id="collegeMap">
+		<result column="COL_CODE" property="colCode"/>
+		<result column="COL_NAME" property="colName"/>
+		<result column="COL_OPEN" property="colOpen"/>
+	</resultMap>
+	
+</mapper>

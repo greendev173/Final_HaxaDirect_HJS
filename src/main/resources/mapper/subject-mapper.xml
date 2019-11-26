@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="subject">
+	
+	<select id="selectRoom" resultType="map" parameterType="string">
+		SELECT * FROM HD_ROOM_TB WHERE SUBSTR(SUB_ROOM,1,1)=#{roomValue}
+	</select>
+	
+	<select id="selectTime" resultMap="subjectMap" parameterType="subject">
+		SELECT SUB_TIME FROM HD_SUBJECT_TB WHERE SUB_DATE=#{subDate} AND SUB_ROOM=#{subRoom} AND SUB_YEAR=${subYear} AND SUB_SEMESTER=${subSemester} 
+	</select>
+	
+	<select id="selectCurri" resultType="map" parameterType="string">
+		SELECT * FROM HD_CURRICULUM_TB WHERE DEPT_CODE=#{deptCode}
+	</select>
+	
+	<insert id="subInsert" parameterType="subject">
+		INSERT INTO HD_SUBJECT_TB VALUES(#{subCode},#{subName},#{targetSubject},#{targetGrade},#{completePt}
+		,#{subType},#{deptCode},#{subDate},#{subTime},#{subRoom},#{subYear},#{subSemester},SUB_SEQ_SEQ.NEXTVAL)
+	</insert>
+	
+	<select id="subselectAll" resultMap="subjectMap">
+		SELECT SUB_NAME, TARGET_GRADE, SUB_DATE, SUB_TIME, SUB_ROOM, SUB_YEAR, SUB_SEMESTER, DEPT_NAME AS DEPT_CODE FROM HD_SUBJECT_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE) WHERE SUB_YEAR=TO_CHAR(SYSDATE,'YYYY')
+	</select>
+	
+	<select id="curriSearch" parameterType="subject" resultMap="subjectMap">
+				SELECT SUB_NAME, TARGET_GRADE, SUB_DATE, SUB_TIME, SUB_ROOM, SUB_YEAR, SUB_SEMESTER, DEPT_NAME AS DEPT_CODE FROM HD_SUBJECT_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+				WHERE 1=1
+				<if test='subYear !="" &amp; subYear != null'>
+					AND SUB_YEAR=#{subYear}
+				</if>
+				<if test='targetGrade !="" &amp; targetGrade != null'>
+					AND TARGET_GRADE=#{targetGrade}
+				</if>
+				<if test='subSemester !="" &amp; subSemester != null'>
+					AND SUB_SEMESTER=#{subSemester}
+				</if>
+				<if test='deptCode !="" &amp; deptCode != null'>
+					AND DEPT_CODE=#{deptCode}
+				</if>
+	</select>
+	
+	<select id="subTarget" parameterType="string" resultMap="curriculumMap">
+		SELECT TARGET_SUBJECT, SUB_CODE FROM HD_CURRICULUM_TB WHERE SUB_NAME=#{subName}
+	</select>
+	
+<resultMap id="curriculumMap" type="curriculum">
+  	<result column="SUB_CODE" property="subCode"/>
+	<result column="SUB_NAME" property="subName"/>
+	<result column="TARGET_SUBJECT" property="targetSubject"/>
+	<result column="DEPT_CODE" property="deptCode"/>
+</resultMap>
+
+  <resultMap id="subjectMap" type="subject">
+  	<result column="SUB_SEQ" property="subSeq"/>
+	<result column="SUB_CODE" property="subCode"/>
+	<result column="SUB_NAME" property="subName"/>
+	<result column="TARGET_SUBJECT" property="targetSubject"/>
+	<result column="TARGET_DEPT" property="targetDept"/>
+	<result column="TARGET_GRADE" property="targetGrade"/>
+	<result column="COMPLETE_PT" property="completePt"/>
+	<result column="SUB_TYPE" property="subType"/>
+	<result column="DEPT_CODE" property="deptCode"/>
+	<result column="SUB_DATE" property="subDate"/>
+	<result column="SUB_TIME" property="subTime"/>
+	<result column="SUB_ROOM" property="subRoom"/>
+	<result column="SUB_YEAR" property="subYear"/>
+	<result column="SUB_SEMESTER" property="subSemester"/>
+</resultMap>
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="noticeMapper">
+  
+	<select id="selectNoticeList" resultMap="noticeResult">
+		SELECT * FROM HD_BOARD_TB ORDER BY BOARD_NO DESC
+	</select>
+	
+	<select id="countNoticeList" resultType="_int">
+		SELECT COUNT(*) FROM HD_BOARD_TB
+	</select>
+	
+	<insert id="insertNotice" parameterType="notice">
+		INSERT INTO HD_BOARD_TB VALUES(NOTICE_SEQ.NEXTVAL,#{boardTitle},#{boardContent},'관리자',DEFAULT,DEFAULT)
+		<selectKey keyProperty="boardNo" resultType="_int" order="AFTER">
+			SELECT NOTICE_SEQ.CURRVAL FROM DUAL
+		</selectKey>
+	</insert>
+	
+	<insert id="insertNoticeAttachment" parameterType="com.kh.finalProject.employee.model.vo.NoticeAttachment">
+		INSERT INTO HD_NOTICE_ATTACHMENT_TB VALUES(SEQ_NOTICE_FILE.NEXTVAL,#{noticeNo},#{oriFileName},#{reFileName},DEFAULT)
+	</insert>
+	
+	<select id="viewNoticeDetail" parameterType="_int" resultMap="noticeResult">
+		SELECT * FROM HD_BOARD_TB WHERE BOARD_NO = #{noticeNo}
+	</select>
+	
+	<update id="updateReadCount" parameterType="_int">
+		UPDATE HD_BOARD_TB SET HIT_COUNT = HIT_COUNT+1 WHERE BOARD_NO = #{noticeNo}
+	</update>
+	
+	<select id="selectNoticeAttachment" parameterType="_int" resultMap="noticeAttachmentResult">
+		SELECT * FROM HD_NOTICE_ATTACHMENT_TB WHERE NOTICE_NO = #{noticeNo}	
+	</select>	
+	
+	<resultMap id="noticeAttachmentResult" type="com.kh.finalProject.employee.model.vo.NoticeAttachment">
+		<result column="NOTICE_FILENO" property="noticeFileNo"/>
+		<result column="NOTICE_NO" property="noticeNo"/>
+		<result column="NOTICE_ORI_FILENAME" property="oriFileName"/>
+		<result column="NOTICE_RE_FILENAME" property="reFileName"/>
+		<result column="NOTICE_UPLOAD_DATE" property="noticeUploadDate"/>
+	
+	
+	</resultMap>
+	
+	<resultMap type="notice" id="noticeResult">
+		<result column="BOARD_NO" property="boardNo"/>
+		<result column="BOARD_TITLE" property="boardTitle"/>
+		<result column="board_Content" property="boardContent"/>
+		<result column="board_Writer" property="boardWriter"/>
+		<result column="reg_Date" property="regDate"/>
+		<result column="HIT_COUNT" property="hitCount"/>
+	</resultMap>
+</mapper>

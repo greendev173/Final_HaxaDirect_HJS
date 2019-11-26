@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="student">
+	<select id="selectOne" parameterType="student" resultMap="studentResult">
+  		SELECT * FROM HD_STUDENT_TB WHERE stu_No=#{stuNo}
+  	</select>
+  	
+  	<insert id="insertNewStu" parameterType="student">
+  	INSERT INTO HD_STUDENT_TB VALUES(#{stuNo},#{stuName},#{stuPw},#{stuSsn},#{stuTel},#{stuAddr},#{gender},#{deptCode},sysdate,#{stuEmail},#{regStatus},NULL,#{stuYearSem},DEFAULT,NULL,NULL,NULL,NULL)
+  	</insert>
+  	
+  	<select id="selectLastNum" parameterType="string" resultType="int">
+  	    SELECT NVL(MAX(SUBSTR(STU_NO,9,10)),0) AS NUM FROM HD_STUDENT_TB WHERE DEPT_CODE = #{deptCode} AND  STU_YEAR_SEM = '1-0' OR STU_YEAR_SEM = '3-0'
+  	</select>
+  	
+  	<select id="selectDeptCount" parameterType="string" resultType="_int">
+      		SELECT COUNT(*) FROM HD_STUDENT_TB WHERE DEPT_CODE = #{result} AND CON_SEMESTER IS NULL
+  	</select>
+  	
+  	<select id="selectStuList" resultType="map" parameterType="string">
+  		SELECT STU_NO AS PROF_ID, STU_NAME AS PROF_NAME, DEPT_NAME, STU_TEL AS PHONE, STU_EMAIL AS EMAIL, STU_ADDR AS ADDRESS FROM HD_STUDENT_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+ 		<if test="value != null">
+		WHERE SUBSTR(DEPT_CODE,1,1) = #{value}
+		</if>
+		 ORDER BY ENTER_DATE DESC, DEPT_CODE
+  	</select>
+  	
+  	<select id="stuCount" resultType="_int" parameterType="string">
+  		SELECT COUNT(*) FROM HD_STUDENT_TB
+  		<if test="value != null">
+		WHERE SUBSTR(DEPT_CODE,1,1) = #{value}
+		</if>
+  	</select>
+  	
+  	<select id="deptStu" resultType="map" parameterType="map">
+  		SELECT STU_NO AS PROF_ID, STU_NAME AS PROF_NAME, DEPT_NAME, STU_TEL AS PHONE, STU_EMAIL AS EMAIL, STU_ADDR AS ADDRESS FROM HD_STUDENT_TB JOIN HD_DEPARTMENT_TB USING(DEPT_CODE)
+ 		WHERE 1=1
+ 		<if test="deptCode != null">
+		AND DEPT_CODE = #{deptCode}
+		</if>
+		<if test="search != null">
+		AND STU_NO LIKE '%${search}%' OR STU_NAME LIKE '%${search}%'
+		</if>
+		 ORDER BY ENTER_DATE DESC, DEPT_CODE
+  	</select>
+  	
+  	<select id="deptStuCount" resultType="_int" parameterType="map">
+  		SELECT COUNT(*) FROM HD_STUDENT_TB
+  		WHERE 1=1
+  		<if test="deptCode != null">
+		AND DEPT_CODE = #{deptCode}
+		</if>
+		<if test="search != null">
+		AND STU_NO LIKE '%${search}%' OR STU_NAME LIKE '%${search}%'   <!-- '%'||#searchKeyword#||'%' --> 
+		</if>
+  	</select>
+  	
+  	<select id="stuIdSearch" parameterType="student" resultMap="studentResult">
+        SELECT STU_NO, STU_NAME, STU_EMAIL FROM HD_STUDENT_TB WHERE STU_EMAIL=#{stuEmail}
+        <if test="stuName !=null">
+        AND STU_NAME=#{stuName} 
+        </if>
+        <if test="stuNo !=null">
+        AND STU_NO=#{stuNo}
+        </if>
+    </select>
+    <update id="stuPwUpdate" parameterType="string">
+    	UPDATE HD_STUDENT_TB SET STU_PW=#{stuPw} WHERE STU_NO=#{stuNo}
+    </update>
+        
+        
+  	
+  	
+  	<resultMap id="studentResult" type="student">
+		<result column="STU_NO" property="stuNo" />
+		<result column="STU_NAME" property="stuName" />
+		<result column="STU_PW" property="stuPw" />
+		<result column="STU_SSN" property="stuSsn" />
+		<result column="STU_TEL" property="stuTel" />	
+		<result column="STU_ADDR" property="stuAddr" />	
+		<result column="GENDER" property="gender" />	
+		<result column="DEPT_CODE" property="deptCode" />	
+		<result column="ENTER_DATE" property="enterDate" />	
+		<result column="STU_EMAIL" property="stuEmail" />
+		<result column="REG_STATUS" property="regStatus" />	
+		<result column="PROF_ID" property="profId" />	
+		<result column="STU_YEAR_SEM" property="stuYearSem" />
+		<result column="MAX_PSB_CR" property="maxPsbCr"/>
+		<result column="CON_SEMESTER" property="conSemester" />	
+		<result column="STU_IMG_ORINAME" property="stuImgOriname" />
+		<result column="STU_IMG_RENAME" property="stuImgRename" />
+		<result column="STU_ACCOUNT" property="stuAccount" />	
+	</resultMap>
+
+  
+</mapper>

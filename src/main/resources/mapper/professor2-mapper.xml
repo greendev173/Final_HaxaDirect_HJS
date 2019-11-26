@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="prof2">
+
+
+	<select id="selectSysdate" resultType="string">
+		SELECT TO_CHAR(SYSDATE,'YYYY/MM/DD') FROM DUAL
+	</select>
+
+
+
+	<!--  학과생 조회  -->
+	<select id="selectInMajor" parameterType="selectInMajor" resultMap="studentResult">
+		SELECT STU_NO, STU_NAME, GENDER, STU_TEL, STU_EMAIL, 
+			   STU_ADDR, REG_STATUS, DEPT_CODE, 
+			   SUBSTR(STU_YEAR_SEM,1) AS GRADE
+		
+		FROM HD_STUDENT_TB 
+		
+		WHERE 1 = 1 
+		<if test='stuNo !="" &amp; stuNo != null'>
+			AND STU_NO = #{stuNo}
+		</if>
+		<if test='stuName !="" &amp; stuName != null'>
+			AND STU_NAME = #{stuName}
+		</if>
+		<if test='grade !="" &amp; grade != null'>
+			AND SUBSTR(STU_YEAR_SEM,1,1) = #{grade} 
+		</if>
+			AND DEPT_CODE = #{deptCode} 
+			ORDER BY STU_NAME
+	</select>
+	<!--  학과생 리스트 카운트 (페이징용) -->
+	<select id="countInDept"  resultType="_int" parameterType="selectInMajor">
+	
+		SELECT COUNT(*) 
+		FROM HD_STUDENT_TB 
+		WHERE 1=1 
+		<if test='stuNo !="" &amp; stuNo != null'>
+			AND STU_NO = #{stuNo}
+		</if>
+		<if test='stuName !="" &amp; stuName != null'>
+			AND STU_NAME = #{stuName}
+		</if>
+		<if test='grade !="" &amp; grade != null'>
+			AND SUBSTR(STU_YEAR_SEM,1,1) = #{grade}
+		</if>
+		AND DEPT_CODE = #{deptCode}
+	</select>
+	
+	<!-- 수강생 조회 -->
+	<select id="selectPreSubject" parameterType="professor" resultType="string">
+		SELECT DISTINCT(SUB_YEAR)
+		FROM HD_SUBJECT_TB A
+		JOIN (SELECT SUB_CODE FROM HD_CLASS_TB WHERE PROF_ID = #{profId}) B ON(A.SUB_CODE = B.SUB_CODE)
+	</select>
+	<!-- 로그인한 교수가 개설중인 강의명 , 강의코드 조회 -->
+	<select id="selectPreSubjectName" parameterType="professor" resultMap="subNameCodeResult">
+		SELECT a.SUB_NAME, a.sub_code
+		FROM HD_SUBJECT_TB A
+		JOIN (SELECT SUB_CODE FROM HD_CLASS_TB WHERE PROF_ID = #{profId}) B ON(A.SUB_CODE = B.SUB_CODE)
+	</select>
+	
+	<select id="selectInClass" parameterType="selectInClass" resultMap="inClassResult">
+		<!-- SELECT STU_NO, STU_NAME, GENDER , 
+		(SELECT SUB_NAME FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) AS SUB_NAME,
+		(SELECT SUB_CODE FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) AS SUB_CODE,
+        (SELECT SUB_YEAR FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) AS SUB_YEAR,
+		SUBSTR(STU_YEAR_SEM,1,1) AS GRADE,
+		STU_TEL, STU_EMAIL, STU_ADDR
+		
+		FROM HD_STUDENT_TB
+		WHERE STU_NO = (SELECT STU_NO
+        FROM HD_SUB_REQ_TB
+        WHERE SUB_CODE = #{subCode})
+        
+		<if test='grade != null &amp; grade != "" '>
+			AND SUBSTR(STU_YEAR_SEM,1,1) = #{grade}
+		</if>
+		<if test='stuNo != null &amp; stuNo != "" '>
+			AND STU_NO = #{stuNo}		
+		</if>
+		<if test='stuName != null &amp; stuName != "" '>
+			AND STU_NAME = #{stuName}
+		</if>
+		<if test='subName != null &amp; subName != "" '>
+			AND SUB_NAME = #{subName}
+		</if>
+		AND (SELECT SUB_YEAR FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) = #{subYear}
+		AND (SELECT SUB_CODE FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) = #{subCode} -->
+		SELECT * FROM(
+        SELECT * 
+                FROM (SELECT A.SUB_CODE, PROF_ID,STU_NO,CONCAT(CONCAT(SUB_YEAR,'-'),SUB_SEMESTER) AS ACA_YEAR_SEM
+        FROM HD_CLASS_TB A
+        LEFT JOIN HD_SUBJECT_TB USING(SUB_SEQ)
+        RIGHT JOIN HD_SUB_REQ_TB USING(SUB_SEQ)) A
+                      JOIN (SELECT A2.STU_NAME, A2.STU_NO, A2.DEPT_CODE, B2.DEPT_NAME, SUBSTR(STU_YEAR_SEM,1,1) AS GRADE, A2.STU_ADDR, A2.STU_EMAIL, A2.GENDER, A2.STU_TEL 
+                            FROM HD_STUDENT_TB A2
+                            JOIN (SELECT * FROM HD_DEPARTMENT_TB) B2 ON (A2.DEPT_CODE = B2.DEPT_CODE)
+                            ) 
+                      B ON (A.STU_NO = B.STU_NO))
+		WHERE SUB_CODE = #{subCode} AND SUBSTR(ACA_YEAR_SEM,1,4) = #{subYear}
+			<if test='grade != null &amp; grade != ""'>
+			AND GRADE = #{grade}
+		</if>
+		<if test='stuNo != null &amp; stuNo != "" '>
+			AND STU_NO = #{stuNo}
+		</if>
+		<if test='stuName != null &amp; stuName !="" '>
+			AND STU_NAME = #{stuName}
+		</if>
+	</select>
+	
+	<select id="countInClass" parameterType="selectInClass" resultType="_int">
+		SELECT COUNT(*) 
+		FROM(
+        SELECT * 
+                FROM (SELECT A.SUB_CODE, PROF_ID,STU_NO,CONCAT(CONCAT(SUB_YEAR,'-'),SUB_SEMESTER) AS ACA_YEAR_SEM
+        FROM HD_CLASS_TB A
+        LEFT JOIN HD_SUBJECT_TB USING(SUB_SEQ)
+        RIGHT JOIN HD_SUB_REQ_TB USING(SUB_SEQ)) A
+                      JOIN (SELECT A2.STU_NAME, A2.STU_NO, A2.DEPT_CODE, B2.DEPT_NAME, SUBSTR(STU_YEAR_SEM,1,1) AS GRADE, A2.STU_ADDR, A2.STU_EMAIL, A2.GENDER, A2.STU_TEL 
+                            FROM HD_STUDENT_TB A2
+                            JOIN (SELECT * FROM HD_DEPARTMENT_TB) B2 ON (A2.DEPT_CODE = B2.DEPT_CODE)
+                            ) 
+                      B ON (A.STU_NO = B.STU_NO))
+		WHERE SUB_CODE = #{subCode} AND SUBSTR(ACA_YEAR_SEM,1,4) = #{subYear}
+		<if test='grade != null &amp; grade !="" '>
+			AND GRADE = #{grade}
+		</if>
+		<if test='stuNo != null &amp; stuNo != "" '>
+			AND STU_NO = #{stuNo}
+		</if>
+		<if test='stuName != null &amp; stuName !=""'>
+			AND STU_NAME = #{stuName}
+		</if>
+       <!--  SELECT COUNT(*)
+
+		FROM    (SELECT STU_NO, STU_NAME, GENDER , 
+				(SELECT SUB_NAME FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) AS SUB_NAME,
+				(SELECT SUB_CODE FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) AS SUB_CODE,
+        		(SELECT SUB_YEAR FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) AS SUB_YEAR,
+				SUBSTR(STU_YEAR_SEM,1,1) AS GRADE,
+				STU_TEL, STU_EMAIL, STU_ADDR
+				FROM HD_STUDENT_TB
+				WHERE STU_NO = (SELECT STU_NO
+		        FROM HD_SUB_REQ_TB
+		        WHERE SUB_CODE = #{subCode})
+		<if test='grade != null &amp; grade != "" '>
+			AND SUBSTR(STU_YEAR_SEM,1,1) = #{grade}
+		</if>
+		<if test='stuNo != null &amp; stuNo != "" '>
+			AND STU_NO = #{stuNo}		
+		</if>
+		<if test='stuName != null &amp; stuName != "" '>
+			AND STU_NAME = #{stuName}
+		</if>
+		<if test='subName != null &amp; subName != "" '>
+			AND (SELECT SUB_NAME FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) = #{subName}
+		</if>
+		AND (SELECT SUB_YEAR FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) = #{subYear}
+		AND (SELECT SUB_CODE FROM HD_SUBJECT_TB WHERE SUB_CODE = #{subCode}) = #{subCode}
+        ) -->
+		
+	</select>
+	
+	<select id="selectClassInfo" parameterType="map" resultMap="selectClassInfoResult">
+		SELECT *
+		FROM (SELECT SUB_CODE , 
+		 	   (SELECT SUB_YEAR FROM HD_SUBJECT_TB WHERE SUB_CODE=#{subCode}) AS SUB_YEAR, 
+		 	   (SELECT SUB_SEMESTER FROM HD_SUBJECT_TB WHERE SUB_CODE=#{subCode}) AS SUB_SEME, 
+		       (SELECT PROF_NAME FROM HD_PROFESSOR_TB WHERE PROF_ID = #{profId}) AS PROF_NAME,
+		       (SELECT PHONE FROM HD_PROFESSOR_TB WHERE PROF_ID=#{profId}) AS PHONE,
+		       (SELECT SUB_DATE FROM HD_SUBJECT_TB WHERE SUB_CODE=#{subCode} AND PROF_ID=#{profId}) AS SUB_DATE,
+		       (SELECT SUB_TIME FROM HD_SUBJECT_TB WHERE SUB_CODE=#{subCode} AND PROF_ID=#{profId}) AS SUB_TIME,
+		       (SELECT SUB_ROOM FROM HD_SUBJECT_TB WHERE SUB_CODE=#{subCode} AND PROF_ID=#{profId}) AS SUB_ROOM,
+		       (SELECT BOOK_NAME FROM HD_SUBJECT_TB WHERE SUB_CODE=#{subCode} AND PROF_ID=#{profId}) AS BOOK_NAME, 
+	        	(SELECT COUNT(*)
+	        	FROM (SELECT * 
+	        	FROM (SELECT A.SUB_CODE, PROF_ID,STU_NO,CONCAT(CONCAT(SUB_YEAR,'-'),SUB_SEMESTER) AS ACA_YEAR_SEM
+						FROM HD_CLASS_TB A
+						LEFT JOIN HD_SUBJECT_TB USING(SUB_SEQ)
+						RIGHT JOIN HD_SUB_REQ_TB USING(SUB_SEQ))
+	        	WHERE SUB_CODE =#{subCode} AND PROF_ID=#{profId} )) AS CAPACITY
+	        	
+			  FROM HD_CLASS_TB
+		WHERE SUB_CODE = #{subCode} AND PROF_ID=#{profId})
+	
+	</select>
+	
+	<select id="selectAttendList" parameterType="selectAttendList" resultMap="attendlistResult">
+SELECT DISTINCT(ARI.STU_NO),ARI.PROF_ID, ARI.SUB_CODE, GRADE, ARI.STU_NAME, DEPT_CODE, DEPT_NAME, ACA_YEAR_SEM, SUB_YEAR, SUB_SEMESTER, ATTEND, ABSENT, LATE, EALRY_LEAVE, STATUS, AT_DATE
+FROM    (SELECT ORI.*, 
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='출석' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS ATTEND,
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='결석' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS ABSENT,
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='지각' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS LATE,
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='조퇴' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS EALRY_LEAVE
+            
+        FROM   (SELECT DISTINCT(STU_NO) AS STU_NO, SUB_CODE, PROF_ID, GRADE, STU_NAME, DEPT_CODE, DEPT_NAME, ACA_YEAR_SEM, 
+    
+                (SELECT DISTINCT(SUB_YEAR) AS SY FROM HD_SUBJECT_TB B WHERE A.SUB_SEQ = B.SUB_SEQ) AS SUB_YEAR,
+                (SELECT DISTINCT(SUB_SEMESTER) AS SS FROM HD_SUBJECT_TB B WHERE A.SUB_SEQ = B.SUB_SEQ) AS SUB_SEMESTER
+            
+            FROM HD_SUB_REQ_TB A
+            RIGHT JOIN ( SELECT DISTINCT(STU_NO) AS STN, STU_NAME, DEPT_CODE, SUBSTR(STU_YEAR_SEM , 1,1) AS GRADE 
+                                                                            ,(SELECT DEPT_NAME 
+                                                                              FROM HD_DEPARTMENT_TB A 
+                                                                              WHERE A.DEPT_CODE = B1.DEPT_CODE) AS DEPT_NAME,F.PROF_ID ,F.ACA_YEAR_SEM,F.SUB_CODE
+                        FROM HD_STUDENT_TB B1
+                        RIGHT JOIN (SELECT A.SUB_CODE, PROF_ID,STU_NO,CONCAT(CONCAT(SUB_YEAR,'-'),SUB_SEMESTER) AS ACA_YEAR_SEM
+                                    FROM HD_CLASS_TB A
+                                    LEFT JOIN HD_SUBJECT_TB USING(SUB_SEQ)
+                                    RIGHT JOIN HD_SUB_REQ_TB USING(SUB_SEQ)) F USING(STU_NO)
+                        ) B ON (A.STU_NO = B.STN)
+            WHERE 1 = 1 
+            AND PROF_ID = #{profId}
+			AND SUB_CODE = #{subCode}
+            
+             ) ORI
+       WHERE 1 = 1
+       AND SUB_YEAR = '2019'
+       AND SUB_SEMESTER = '2'
+)
+
+ARI
+LEFT JOIN (SELECT STU_NO, STATUS, TO_CHAR(AT_DATE,'YYYY/MM/DD') AS AT_DATE, SUB_CODE,PROF_ID
+            FROM HD_ATTENDANCE_TB 
+            WHERE (TO_CHAR(AT_DATE,'YYYY/MM/DD')) = #{checkDate}
+			) ORI2 ON(ARI.STU_NO = ORI2.STU_NO  AND ARI.PROF_ID= ORI2.PROF_ID AND ARI.SUB_CODE = ORI2.SUB_CODE)
+	      <!--  첫화면 출력 용 -->
+	</select>
+	
+	<select id="countAttendList" parameterType="selectAttendList" resultType="_int">
+SELECT COUNT(*)
+FROM (SELECT DISTINCT(ARI.STU_NO),ARI.PROF_ID, ARI.SUB_CODE, GRADE, ARI.STU_NAME, DEPT_CODE, DEPT_NAME, ACA_YEAR_SEM, SUB_YEAR, SUB_SEMESTER, ATTEND, ABSENT, LATE, EALRY_LEAVE, STATUS, AT_DATE
+FROM    (SELECT ORI.*, 
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='출석' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS ATTEND,
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='결석' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS ABSENT,
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='지각' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS LATE,
+                (SELECT COUNT(*) FROM HD_ATTENDANCE_TB WHERE STU_NO = ORI.STU_NO AND STATUS='조퇴' AND SUB_CODE= #{subCode} AND PROF_ID= #{profId}) AS EALRY_LEAVE
+            
+        FROM   (SELECT DISTINCT(STU_NO) AS STU_NO, SUB_CODE, PROF_ID, GRADE, STU_NAME, DEPT_CODE, DEPT_NAME, ACA_YEAR_SEM, 
+    
+                (SELECT DISTINCT(SUB_YEAR) AS SY FROM HD_SUBJECT_TB B WHERE A.SUB_SEQ = B.SUB_SEQ) AS SUB_YEAR,
+                (SELECT DISTINCT(SUB_SEMESTER) AS SS FROM HD_SUBJECT_TB B WHERE A.SUB_SEQ = B.SUB_SEQ) AS SUB_SEMESTER
+            
+            FROM HD_SUB_REQ_TB A
+            RIGHT JOIN ( SELECT DISTINCT(STU_NO) AS STN, STU_NAME, DEPT_CODE, SUBSTR(STU_YEAR_SEM , 1,1) AS GRADE 
+                                                                            ,(SELECT DEPT_NAME 
+                                                                              FROM HD_DEPARTMENT_TB A 
+                                                                              WHERE A.DEPT_CODE = B1.DEPT_CODE) AS DEPT_NAME,F.PROF_ID ,F.ACA_YEAR_SEM,F.SUB_CODE
+                        FROM HD_STUDENT_TB B1
+                        RIGHT JOIN (SELECT A.SUB_CODE, PROF_ID,STU_NO,CONCAT(CONCAT(SUB_YEAR,'-'),SUB_SEMESTER) AS ACA_YEAR_SEM
+                                    FROM HD_CLASS_TB A
+                                    LEFT JOIN HD_SUBJECT_TB USING(SUB_SEQ)
+                                    RIGHT JOIN HD_SUB_REQ_TB USING(SUB_SEQ)) F USING(STU_NO)
+                        ) B ON (A.STU_NO = B.STN)
+            WHERE 1 = 1 
+            AND PROF_ID = #{profId}
+			AND SUB_CODE = #{subCode}
+            
+             ) ORI
+       WHERE 1 = 1
+       AND SUB_YEAR = '2019'
+       AND SUB_SEMESTER = '2'
+)
+
+ARI
+LEFT JOIN (SELECT STU_NO, STATUS, TO_CHAR(AT_DATE,'YYYY/MM/DD') AS AT_DATE,SUB_CODE,PROF_ID
+            FROM HD_ATTENDANCE_TB 
+            WHERE (TO_CHAR(AT_DATE,'YYYY/MM/DD')) = #{checkDate}
+			) ORI2 ON(ARI.STU_NO = ORI2.STU_NO  AND ARI.PROF_ID= ORI2.PROF_ID AND ARI.SUB_CODE = ORI2.SUB_CODE))
+	      <!--  첫화면 출력 용 -->
+      
+	</select>
+	
+	<select id="selectOneStuAttendList" parameterType="selectAttendList" resultMap="attendlistResult">
+        SELECT *
+		FROM   (SELECT TO_CHAR(AT_DATE,'YYYY/MM/DD') AS AT_DATE, STATUS ,ORI.STU_NO,PROF_ID,
+		                (SELECT STU_NAME FROM HD_STUDENT_TB WHERE STU_NO = ORI.STU_NO) AS STU_NAME,GRADE, DEPT_NAME,
+		                (SELECT SUB_NAME FROM HD_CURRICULUM_TB WHERE SUB_CODE = ORI.SUB_CODE) AS SUB_NAME
+		        FROM HD_ATTENDANCE_TB ORI
+		        JOIN (SELECT STU_NO , STU_NAME , SUBSTR(STU_YEAR_SEM,1,1) AS GRADE, DEPT_CODE ,DEPT_NAME
+		              FROM HD_STUDENT_TB
+		              LEFT JOIN (SELECT DEPT_CODE, DEPT_NAME FROM HD_DEPARTMENT_TB) USING(DEPT_CODE)
+		                         WHERE STU_NO = #{stuNo}) C ON(C.STU_NO = ORI.STU_NO) 
+				WHERE ORI.STU_NO = #{stuNo}
+		        AND PROF_ID = #{profId}
+		        AND SUB_CODE = #{subCode})
+		ORDER BY AT_DATE DESC
+	</select>
+	
+	
+	<insert id="insertAttend" parameterType="selectAttendList">
+			INSERT INTO HD_ATTENDANCE_TB VALUES(#{subCode},#{profId},#{stuNo},'2019-2',#{status},#{checkDate})
+	</insert>
+	
+	
+	<select id="selectReqList" parameterType="selectInClass" resultMap="RequestResult">
+		SELECT STU_NO, REQ_DATE, REQ_TITLE, REQ_CONTENT, ACA_YEAR_SEM , PROF_ID, SUB_CODE, REQ_YN, REQ_ANSWER, PROF_NAME, (SELECT STU_NAME FROM HD_STUDENT_TB WHERE STU_NO = A.STU_NO) AS STU_NAME
+		FROM HD_REQUEST_TB A
+		WHERE 1=1
+		<if test='subCode != null &amp; subCode !=""'>
+		AND SUB_CODE = #{subCode}
+		</if>
+		AND PROF_ID = #{profId}
+		<if test='subYear !=null &amp; subYear !=""'>
+		AND ACA_YEAR_SEM = CONCAT(CONCAT(#{subYear},'-'),#{subSemester})
+		</if>
+		
+		
+	</select>
+	
+	<select id="countReqList" parameterType="selectInClass" resultType="_int">
+		SELECT COUNT(*) 
+		FROM HD_REQUEST_TB
+		WHERE 1=1
+		<if test='subCode != null &amp; subCode !=""'>
+		AND SUB_CODE = #{subCode}
+		</if>
+		AND PROF_ID = #{profId}
+		<if test='subYear !=null &amp; subYear !=""'>
+		AND ACA_YEAR_SEM = CONCAT(CONCAT(#{subYear},'-'),#{subSemester})
+		</if>
+	</select>
+	
+	<update id="updateAnswer" parameterType="request">
+		UPDATE HD_REQUEST_TB SET REQ_ANSWER = #{reqAnswer} 
+		WHERE PROF_ID = #{profId} 
+		AND SUB_CODE = #{subCode} 
+		AND STU_NO = #{stuNo}
+		AND ACA_YEAR_SEM = #{acaYearSem} 
+	</update>
+	
+	
+	<!-- @@@@@@@@@@@@@@ ResultMap @@@@@@@@@@@@@@@@@@@2 생성  -->
+	<resultMap type="request" id="RequestResult">
+		<result column="STU_NO" property="stuNo"/>
+		<result column="STU_NAME" property="stuName"/>
+		<result column="REQ_DATE" property="reqDate"/>
+		<result column="REQ_TITLE" property="reqTitle"/>
+		<result column="REQ_CONTENT" property="reqContent"/>
+		<result column="ACA_YEAR_SEM" property="acaYearSem"/>
+		<result column="PROF_ID" property="profId"/>
+		<result column="SUB_CODE" property="subCode"/>
+		<result column="REQ_YN" property="reqYn"/>
+		<result column="REQ_ANSWER" property="reqAnswer"/>
+		<result column="PROF_NAME" property="profName"/>
+		
+	</resultMap>
+	
+	
+	<resultMap type="attendStudent" id="attendlistResult">
+		<result column="STU_NO" property="stuNo"/>
+		<result column="SUB_CODE" property="subCode"/>
+		<result column="SUB_NAME" property="subName"/>
+		<result column="PROF_ID" property="profId"/>
+		<result column="GRADE" property="grade"/>
+		<result column="STU_NAME" property="stuName"/>
+		<result column="DEPT_COODE" property="deptCode"/>		
+		<result column="DEPT_NAME" property="deptName"/>
+		<result column="ACA_YEAR_SEM" property="acaYearSem"/>
+		<result column="SUB_YEAR" property="subYear"/>
+		<result column="SUB_SEMESTER" property="subSemester"/>
+		<result column="ATTEND" property="attend"/>
+		<result column="ABSENT" property="absent"/>
+		<result column="LATE" property="late"/>
+		<result column="EALRY_LEAVE" property="ealryLeave"/>		
+		<result column="STATUS" property="status"/>		
+		<result column="AT_DATE" property="atDate"/>		
+	
+	</resultMap>
+	
+	
+	<resultMap id="selectClassInfoResult" type="selectClassInfo">
+		<result column="SUB_CODE" property="subCode" />
+		<result column="SUB_YEAR" property="subYear" />
+		<result column="SUB_SEME" property="subSeme" />
+		<result column="PROF_NAME" property="profName" />
+		<result column="PHONE" property="phone" />
+		<result column="SUB_DATE" property="subDate" />
+		<result column="SUB_TIME" property="subTime" />
+		<result column="SUB_ROOM" property="subRoom" />
+		<result column="BOOK_NAME" property="bookName" />
+		<result column="CAPACITY" property="capacity" />
+	</resultMap>
+
+
+
+	<resultMap id="inClassResult" type="inClassStudent">
+		<result column="STU_NO" property="stuNo" />
+		<result column="STU_NAME" property="stuName" />
+		<result column="GENDER" property="gender" />
+		<result column="SUB_NAME" property="subName" />
+		<result column="DEPT_NAME" property="deptName" />
+		<result column="GRADE" property="grade" />
+		<result column="STU_TEL" property="stuTel" />
+		<result column="STU_EMAIL" property="stuEmail" />
+		<result column="STU_ADDR" property="stuAddr" />
+		<result column="ASSIGN_1" property="assign1" />
+		<result column="ASSIGN_2" property="assign2" />
+		<result column="ASSIGN_3" property="assign3" />
+		<result column="ASSIGN_4" property="assign4" />
+		<result column="M_TERM" property="mTerm" />
+		<result column="F_TERM" property="fTerm" />
+	</resultMap>
+
+
+
+	<resultMap id="subNameCodeResult" type="selectSubjectNameCode">
+		<result column="SUB_CODE" property="subCode" />
+		<result column="SUB_NAME" property="subName" />
+	</resultMap>
+
+
+  <resultMap id="professorResult" type="professor">
+		<result column="PROF_ID" property="profId" />
+		<result column="PROF_PW" property="profPw" />
+		<result column="PROF_NAME" property="profName" />
+		<result column="PROF_SSN" property="profSsn" />
+		<result column="DEPT_CODE" property="deptCode" />	
+		<result column="EMAIL" property="email" />	
+		<result column="PHONE" property="phone" />	
+		<result column="ADDRESS" property="address" />	
+		<result column="GENDER" property="gender" />	
+		<result column="PROF_ENROLL" property="profEnroll" />	
+	</resultMap>
+	
+	
+  	<resultMap id="studentResult" type="student">
+		<result column="STU_NO" property="stuNo" />
+		<result column="STU_NAME" property="stuName" />
+		<result column="STU_PW" property="stuPw" />
+		<result column="STU_SSN" property="stuSsn" />
+		<result column="STU_TEL" property="stuTel" />	
+		<result column="STU_ADDR" property="stuAddr" />	
+		<result column="GENDER" property="gender" />	
+		<result column="DEPT_CODE" property="deptCode" />	
+		<result column="ENTER_DATE" property="enterDate" />	
+		<result column="STU_EMAIL" property="stuEmail" />
+		<result column="REG_STATUS" property="regStatus" />	
+		<result column="PROF_ID" property="profId" />	
+		<result column="STU_YEAR_SEM" property="stuYearSem" />
+		<result column="MAX_PSB_CR" property="maxPsbCr"/>
+		<result column="CON_SEMESTER" property="conSemester" />	
+		<result column="STU_IMG_ORINAME" property="stuImgOriname" />
+		<result column="STU_IMG_RENAME" property="stuImgRename" />
+		<result column="STU_ACCOUNT" property="stuAccount" />	
+	</resultMap>
+	
+</mapper>

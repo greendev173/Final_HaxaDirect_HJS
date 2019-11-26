@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="req">
+  <insert id="insertReq" parameterType="req">
+  	INSERT INTO HD_REQ_TB VALUES(REQ_NO_SEQ.NEXTVAL,#{reqTitle}, #{reqContents}, #{fromName}, #{toName}, DEFAULT, DEFAULT) 
+  </insert>
+  
+  <select id="reqList" resultMap="reqResult">
+  	SELECT REQ_NO, REQ_TITLE, REQ_CONTENTS, FROM_NAME, TO_NAME, REQ_READ, to_char(TO_TIME, 'YYYY-MM-DD HH24:MI')AS TO_TIME FROM HD_REQ_TB WHERE FROM_NAME='EA000000000' 
+  	<if test="value==1">
+  		AND REQ_READ='접수'
+  	</if>
+  	<if test="value==2">
+  		AND REQ_READ='처리 완료'
+  	</if>
+  	ORDER BY REQ_NO DESC
+  </select>
+  
+  <select id="reqOne" parameterType="_int" resultMap="reqResult">
+  	SELECT REQ_NO, REQ_TITLE, REQ_CONTENTS, FROM_NAME, TO_NAME, REQ_READ, to_char(TO_TIME, 'YYYY-MM-DD HH24:MI')AS TO_TIME FROM HD_REQ_TB WHERE REQ_NO=#{reqNo}
+  </select>
+  
+  <update id="answerUpdate" parameterType="_int">
+  	UPDATE HD_REQ_TB SET REQ_READ='처리 완료' WHERE REQ_NO=#{reqNo}
+  </update>
+  
+  <select id="selectReqCount" resultType="_int">
+  	select count(*) from HD_REQ_TB WHERE FROM_NAME='EA000000000' 
+  	<if test="value==1">
+  		AND REQ_READ='접수'
+  	</if>
+  	<if test="value==2">
+  		AND REQ_READ='처리 완료'
+  	</if>
+  </select>
+  
+  <select id="selectReqCount1" resultType="_int">
+  	select count(*) from HD_REQ_TB WHERE FROM_NAME='EA000000000' AND REQ_READ='접수'
+  </select>
+  
+  <select id="selectReqCount2" resultType="_int">
+  	select count(*) from HD_REQ_TB where FROM_NAME='EA000000000' AND REQ_READ='처리 완료'
+  </select>
+  
+  <select id="reqSendList" resultMap="reqResult" parameterType="string">
+  	SELECT REQ_NO, REQ_TITLE, REQ_CONTENTS, FROM_NAME, TO_NAME, REQ_READ, to_char(TO_TIME, 'YYYY-MM-DD HH24:MI')AS TO_TIME FROM HD_REQ_TB WHERE TO_NAME=#{userId} ORDER BY TO_TIME
+  </select>
+  
+  <select id="reqAnswerList" resultMap="reqResult" parameterType="string">
+  	SELECT REQ_NO, REQ_TITLE, REQ_CONTENTS, FROM_NAME, TO_NAME, REQ_READ, to_char(TO_TIME, 'YYYY-MM-DD HH24:MI')AS TO_TIME FROM HD_REQ_TB WHERE FROM_NAME=#{userId} ORDER BY TO_TIME
+  </select>
+  
+  <resultMap id="reqResult" type="req">
+		<result column="REQ_NO" property="reqNo" />
+		<result column="REQ_TITLE" property="reqTitle" />
+		<result column="REQ_CONTENTS" property="reqContents" />
+		<result column="FROM_NAME" property="fromName" />
+		<result column="TO_NAME" property="toName" />	
+		<result column="TO_TIME" property="toTime" />	
+		<result column="REQ_READ" property="reqRead" />	
+	</resultMap>
+  
+</mapper>
