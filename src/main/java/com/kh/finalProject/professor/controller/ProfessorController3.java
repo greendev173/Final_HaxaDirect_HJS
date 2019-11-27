@@ -31,7 +31,7 @@ public class ProfessorController3 {
 	
 	
 	@RequestMapping("/prof/editClassPoint.hd")	
-	public String gradeEdit(HttpSession session, Model m,HttpServletRequest req,@RequestParam(value="cPage",required=false,defaultValue="1")int cPage) {	
+	public String gradeEdit(HttpSession session, Model m,HttpServletRequest req, @RequestParam(value="cPage",required=false,defaultValue="1")int cPage) {	
 		
 		Professor p=(Professor)session.getAttribute("loginMember");
 		int numPerPage=10;
@@ -50,7 +50,7 @@ public class ProfessorController3 {
 		
 		
 		m.addAttribute("totalCount",totalData);
-		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/${path}/prof/editClassPoint.hd"));
+		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/prof/editClassPoint.hd"));
 		m.addAttribute("studyList",studyList);
 		m.addAttribute("list",list);
 	
@@ -81,7 +81,7 @@ public class ProfessorController3 {
 		
 		
 		m.addAttribute("totalCount",totalData);
-		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/${path}/prof/choiceClass.hd"));
+		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/prof/choiceClass.hd"));
 		m.addAttribute("studyList",studyList);
 		m.addAttribute("list",list);
 	

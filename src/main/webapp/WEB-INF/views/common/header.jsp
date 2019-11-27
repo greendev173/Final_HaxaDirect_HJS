@@ -194,10 +194,10 @@
                 <i class="ti-settings text-primary"></i>
                 Settings
               </a> -->
-              <a class="dropdown-item" href="${path }/login">
+              <%-- <a class="dropdown-item" href="${path }/login">
                 <i class="ti-settings text-primary"></i>
                 Login
-              </a>
+              </a> --%>
               <a class="dropdown-item" href="${path }/logout.hd">
                 <i class="ti-power-off text-primary"></i>
                 Logout
@@ -216,14 +216,30 @@
       <nav class="sidebar sidebar-offcanvas sidebar1" id="sidebar">
         <ul class="nav">
         <% if(session.getAttribute("loginMember") instanceof Professor){%>
-            <div class="sidebar-heading">
-             교수
+         <div class="sidebar-heading" style="font-size:13px; text-align:center;">
+           <%=((Professor)session.getAttribute("loginMember")).getProfName()%> 교수님<br>환영합니다.
          </div>
+         
+         <!-- 교수정보 -->
+              <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#prof_info" aria-expanded="false" aria-controls="auth">
+              <i class="ti-user menu-icon"></i>
+              <span class="menu-title">개인 정보</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="prof_info">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="${pageContext.request.contextPath }/professor/professorView?profId=${loginMember.profId}">개인 정보 조회</a></li>
+              </ul>
+            </div>
+          </li>
+          
+          
             <!-- 강의정보 -->
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#class_info" aria-expanded="false" aria-controls="ui-basic">
               <i class="ti-palette menu-icon"></i>
-              <span class="menu-title">강의정보</span>
+              <span class="menu-title">강의 정보</span>
               <i class="menu-arrow"></i>
             </a>
             
@@ -251,7 +267,7 @@
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#stu_info" aria-expanded="false" aria-controls="stu_info">
               <i class="ti-user menu-icon"></i>
-              <span class="menu-title">학생정보</span>
+              <span class="menu-title">학생 정보</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="stu_info">
@@ -264,21 +280,6 @@
               </ul>
             </div>
           </li>
-          
-           <!-- 교수정보 -->
-              <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#prof_info" aria-expanded="false" aria-controls="auth">
-              <i class="ti-user menu-icon"></i>
-              <span class="menu-title">교수정보</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="prof_info">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="${pageContext.request.contextPath }/professor/professorView?profId=${loginMember.profId}">교수정보 조회</a></li>
-              </ul>
-            </div>
-          </li>
-          
           
           
         <!-- 이의신청 처리 -->

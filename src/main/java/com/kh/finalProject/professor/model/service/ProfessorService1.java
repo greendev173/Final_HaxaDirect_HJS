@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
 import com.kh.finalProject.professor.model.vo.ProfBoardAttachment;
@@ -30,7 +31,9 @@ public interface ProfessorService1 {
 	//강의개설 YN
 	int subjectYn(String subCode) throws RuntimeException;
 	//교수뷰
-	List<Subject> professorView(String profId);
+	List<Subject> professorView(InfoForProfSubject ifps);
+	
+	List<Subject> professorView2(String profId);
 	//교수 정보수정
 	int updateProfessorEnd(Professor p);
 	//교수 비번변경

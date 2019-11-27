@@ -45,7 +45,13 @@
 		UPDATE HD_CLASS_TB SET OPEN_YN = 'Y' WHERE SUB_CODE = #{subCode}
 	</update>
 	<!-- 교수 뷰 --> 
-	<select id="professorView" resultMap="subjectMap" parameterType="string">
+	<select id="professorView" parameterType="infoForProfSubject" resultMap="subjectMap">
+		SELECT C.SUB_CODE, S.DEPT_CODE, S.SUB_NAME, S.SUB_DATE, S.SUB_TIME  
+		FROM (SELECT * FROM HD_CLASS_TB WHERE PROF_ID=#{profId} AND OPEN_YN='Y') C 
+		JOIN HD_SUBJECT_TB S ON C.SUB_SEQ=S.SUB_SEQ AND S.SUB_YEAR=#{acaYear} AND S.SUB_SEMESTER=#{acaSemester}
+	</select>
+	
+	<select id="professorView2" parameterType="string" resultMap="subjectMap">
 		SELECT * FROM HD_CLASS_TB S JOIN HD_PROFESSOR_TB C USING (PROF_ID) WHERE PROF_ID=#{profId} AND OPEN_YN='Y'
 	</select>
 	

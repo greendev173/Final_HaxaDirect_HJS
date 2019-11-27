@@ -256,7 +256,7 @@ public class ClassController {
 		m.addAttribute("applyDay",planList);
 		m.addAttribute("list",list);
 		m.addAttribute("totalCount",totalData);
-		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, "/${path}/student/selectClass.hd"));
+		m.addAttribute("pageBar",PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/student/selectClass.hd"));
 		return "student/myApplyClass";
 		
 	}

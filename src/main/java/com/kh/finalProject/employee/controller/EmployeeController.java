@@ -94,7 +94,7 @@ public class EmployeeController {
 	// 교수 등록 삭제 리스트
 	@RequestMapping("/enrollprofessor.hd")
 	public ModelAndView enrollprofrssor(
-			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage) {
+			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		int numPerPage = 10;
 		List<Professor> list = service.selectProfList(cPage, numPerPage, null);
@@ -103,13 +103,13 @@ public class EmployeeController {
 		mv.addObject("list", list);
 		mv.addObject("totalData", totalData);
 		mv.addObject("pageBar",
-				PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/enrollprofessor.hd"));
+				PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/enrollprofessor.hd"));
 		return mv;
 	}
 
 	@RequestMapping("/changeProfessor.hd")
 	public ModelAndView changeProfessor(@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			String deptCode) {
+			String deptCode, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		int numPerPage = 5;
 		List<Professor> list = service.changeProfessor(cPage, numPerPage, deptCode);
@@ -117,14 +117,14 @@ public class EmployeeController {
 		mv.addObject("list", list);
 		mv.addObject("totalData", totalData);
 		mv.addObject("pageBar",
-				PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/changeProfessor.hd"));
+				PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/changeProfessor.hd"));
 		mv.setViewName("admin/enrollProfessor");
 		return mv;
 	}
 
 	// 직원
 	@RequestMapping("/enrollemployee.hd")
-	public ModelAndView enrollemployee(@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage) {
+	public ModelAndView enrollemployee(@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		int numPerPage = 10;
 		List<Employee> list = service.selectEmpList(cPage, numPerPage, "0");
@@ -132,7 +132,7 @@ public class EmployeeController {
 		mv.addObject("list", list);
 		mv.addObject("totalData", totalData);
 		mv.addObject("pageBar",
-				PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/enrollemployee.hd"));
+				PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/enrollemployee.hd"));
 		mv.setViewName("admin/enrollEmp");
 		return mv;
 	}
@@ -203,7 +203,7 @@ public class EmployeeController {
 	@ResponseBody
 	public Map<String, Object> changeColList(
 			@RequestParam(value = "index", required = false, defaultValue = "0") int index,
-			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage, HttpSession s) {
+			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage, HttpSession s, HttpServletRequest req) {
 		Employee e = (Employee) s.getAttribute("loginMember");
 		int numPerPage = 5;
 		String result = e.getDeptCode().substring(0, 1).equals("0") ? null : e.getDeptCode().substring(0, 1);
@@ -213,7 +213,7 @@ public class EmployeeController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("list", list);
 			map.put("pageBar", PageFactory.getAjaxPageBar(index, totalData, cPage, numPerPage,
-					"/finalProject/col/changeColList.hd"));
+					req.getContextPath()+"/col/changeColList.hd"));
 			return map;
 		} else if (index == 1) {
 			List<?> list = service.selectProfList(cPage, numPerPage, result);
@@ -221,7 +221,7 @@ public class EmployeeController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("list", list);
 			map.put("pageBar", PageFactory.getAjaxPageBar(index, totalData, cPage, numPerPage,
-					"/finalProject/col/changeColList.hd"));
+					req.getContextPath()+"/col/changeColList.hd"));
 			return map;
 		} else {
 			List<?> list = service.selectEmpList(cPage, numPerPage, result);
@@ -229,7 +229,7 @@ public class EmployeeController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("list", list);
 			map.put("pageBar", PageFactory.getAjaxPageBar(index, totalData, cPage, numPerPage,
-					"/finalProject/col/changeColList.hd"));
+					req.getContextPath()+"/col/changeColList.hd"));
 			return map;
 		}
 	}
@@ -239,7 +239,7 @@ public class EmployeeController {
 	public Map<String, Object> searchColList(
 			@RequestParam(value = "index", required = false, defaultValue = "0") int index,
 			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage, String search,
-			HttpSession s) {
+			HttpSession s, HttpServletRequest req) {
 		int numPerPage = 5;
 		if (index == 0) {
 			List<Student> list = service.searchStuList(cPage, numPerPage, search);
@@ -247,7 +247,7 @@ public class EmployeeController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("list", list);
 			map.put("pageBar", PageFactory.getSearchNavPageBar(index, totalData, cPage, numPerPage,
-					"/finalProject/col/searchColList.hd"));
+					req.getContextPath()+"/col/searchColList.hd"));
 			return map;
 		} else if (index == 1) {
 			List<Professor> list = service.searchProfList(cPage, numPerPage, search);
@@ -255,7 +255,7 @@ public class EmployeeController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("list", list);
 			map.put("pageBar", PageFactory.getSearchNavPageBar(index, totalData, cPage, numPerPage,
-					"/finalProject/col/searchColList.hd"));
+					req.getContextPath()+"/col/searchColList.hd"));
 			return map;
 		} else {
 			List<Employee> list = service.searchEmpList(cPage, numPerPage, search);
@@ -263,14 +263,14 @@ public class EmployeeController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("list", list);
 			map.put("pageBar", PageFactory.getSearchNavPageBar(index, totalData, cPage, numPerPage,
-					"/finalProject/col/searchColList.hd"));
+					req.getContextPath()+"/col/searchColList.hd"));
 			return map;
 		}
 	}
 
 	@RequestMapping("/deptStu")
 	public ModelAndView deptStu(@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session) {
+			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		int numPerPage = 5;
 		Employee e = (Employee) session.getAttribute("loginMember");
@@ -283,7 +283,7 @@ public class EmployeeController {
 		int totalData = service.deptStuCount(map);
 		mv.addObject("list", list);
 		mv.addObject("totalData", totalData);
-		mv.addObject("pageBar", PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/deptStu.hd"));
+		mv.addObject("pageBar", PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/deptStu.hd"));
 		mv.setViewName("admin/deptStu");
 		return mv;
 
@@ -293,7 +293,7 @@ public class EmployeeController {
 	@ResponseBody
 	public Map<String, Object> ajaxDeptStu(
 			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session) {
+			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session, HttpServletRequest req) {
 		int numPerPage = 5;
 		Employee e = (Employee) session.getAttribute("loginMember");
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -305,13 +305,13 @@ public class EmployeeController {
 		int totalData = service.deptStuCount(map);
 		map.put("list", list);
 		map.put("cPage", cPage);
-		map.put("pageBar", PageFactory.getSearchPageBar(totalData, cPage, numPerPage, "/finalProject/ajax/deptStu"));
+		map.put("pageBar", PageFactory.getSearchPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/ajax/deptStu"));
 		return map;
 	}
 
 	@RequestMapping("/deptPro.hd")
 	public ModelAndView deptPro(@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			HttpSession session) {
+			HttpSession session, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		int numPerPage = 5;
 		Employee e = (Employee) session.getAttribute("loginMember");
@@ -320,7 +320,7 @@ public class EmployeeController {
 		int totalData = service.changeProfessorCount(deptCode);
 		mv.addObject("list", list);
 		mv.addObject("totalData", totalData);
-		mv.addObject("pageBar", PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/deptPro.hd"));
+		mv.addObject("pageBar", PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/deptPro.hd"));
 		mv.setViewName("admin/deptPro");
 		return mv;
 	}
@@ -329,7 +329,7 @@ public class EmployeeController {
 	@ResponseBody
 	public Map<String, Object> ajaxDeptProf(
 			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session) {
+			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session, HttpServletRequest req) {
 		int numPerPage = 5;
 		Employee e = (Employee) session.getAttribute("loginMember");
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -341,13 +341,13 @@ public class EmployeeController {
 		int totalData = service.deptProfCount(map);
 		map.put("list", list);
 		map.put("cPage", cPage);
-		map.put("pageBar", PageFactory.getSearchPageBar(totalData, cPage, numPerPage, "/finalProject/ajax/deptProf"));
+		map.put("pageBar", PageFactory.getSearchPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/ajax/deptProf"));
 		return map;
 	}
 
 	@RequestMapping("/deptEmp.hd")
 	public ModelAndView deptEmp(@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session) {
+			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session, HttpServletRequest req) {
 		ModelAndView mv = new ModelAndView();
 		int numPerPage = 5;
 		Employee e = (Employee) session.getAttribute("loginMember");
@@ -360,7 +360,7 @@ public class EmployeeController {
 		int totalData = service.deptEmpCount(map);
 		mv.addObject("list", list);
 		mv.addObject("totalData", totalData);
-		mv.addObject("pageBar", PageFactory.getPageBar(totalData, cPage, numPerPage, "/finalProject/deptStu.hd"));
+		mv.addObject("pageBar", PageFactory.getPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/deptStu.hd"));
 		mv.setViewName("admin/deptEmp");
 		return mv;
 
@@ -370,7 +370,7 @@ public class EmployeeController {
 	@ResponseBody
 	public Map<String, Object> ajaxDeptEmp(
 			@RequestParam(value = "cPage", required = false, defaultValue = "1") int cPage,
-			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session) {
+			@RequestParam(value = "search", required = false, defaultValue = "") String search, HttpSession session, HttpServletRequest req) {
 		int numPerPage = 5;
 		Employee e = (Employee) session.getAttribute("loginMember");
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -382,7 +382,7 @@ public class EmployeeController {
 		int totalData = service.deptEmpCount(map);
 		map.put("list", list);
 		map.put("cPage", cPage);
-		map.put("pageBar", PageFactory.getSearchPageBar(totalData, cPage, numPerPage, "/finalProject/ajax/deptStu"));
+		map.put("pageBar", PageFactory.getSearchPageBar(totalData, cPage, numPerPage, req.getContextPath()+"/ajax/deptStu"));
 		return map;
 	}
 

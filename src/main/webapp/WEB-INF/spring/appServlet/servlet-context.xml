@@ -72,6 +72,15 @@
 			<mapping path="/*.do"/>
 			<exclude-mapping path="/"/>
 			<exclude-mapping path="/login.hd"/>
+			<exclude-mapping path="/loginCookieByAjax.hd"/>
+			<exclude-mapping path="/selectColList.do"/>
+			<exclude-mapping path="/selectDeptList.do"/>
+			<exclude-mapping path="/login/createEmailCheck.do"/>
+			<exclude-mapping path="/emailAuth.do"/>
+			<exclude-mapping path="/stuPwSearch.hd"/>
+			<exclude-mapping path="/stuPwRandom.hd"/>
+			<exclude-mapping path="/stuRandomCheck.hd"/>
+			<exclude-mapping path="/email.do"/>								
 			<beans:bean class="com.kh.finalProject.common.interceptor.LoginCheck"/>
 			<!-- 위의 설정은 로그인 안한 상태에서 위의 경로 접근 불가능하게 설정 -->
 		</interceptor>

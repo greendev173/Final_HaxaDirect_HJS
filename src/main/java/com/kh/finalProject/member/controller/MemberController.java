@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import com.kh.finalProject.professor.common.PageFactory;
 import com.kh.finalProject.professor.model.service.ProfessorService;
 import com.kh.finalProject.professor.model.vo.Professor;
 import com.kh.finalProject.student.model.service.StudentService;
+import com.kh.finalProject.student.model.vo.StuTuition;
 import com.kh.finalProject.student.model.vo.Student;
 
 @Controller
@@ -64,20 +67,39 @@ public class MemberController {
 		return "common/main";
 	}
 	
-	@RequestMapping("login")
-	public String login(HttpSession session) {
-		session.invalidate();
-		return "redirect:/index.jsp";
-	}
+//	@RequestMapping("login")
+//	public String login(HttpSession session) {
+//		session.invalidate();
+//		return "redirect:/";
+//	}
 
 	@RequestMapping(value="/login.hd", method=RequestMethod.POST)
 	public String Login1(
 			HttpSession session,
 			HttpServletRequest req,
+			HttpServletResponse res,
 			@RequestParam(value="loginNo") String loginNo, 
 			@RequestParam(value="loginId") String loginId, 
 			@RequestParam(value="loginPwd") String loginPwd
 			) {
+		
+		System.out.println("idSave:"+req.getParameter("idSave"));
+		
+		if(req.getParameter("idSave")!=null&&req.getParameter("idSave").equals("on")) {
+			Cookie idSave=new Cookie("idSave", loginId);
+			idSave.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+			res.addCookie(idSave); // 쿠키 추가
+		}else {
+			Cookie[] cookies=req.getCookies();
+			for(int i=0; i<cookies.length; i++) {
+				if(cookies[i].getName().equals("idSave")) {
+					cookies[i].setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+					cookies[i].setMaxAge(0); // 쿠키 유효시간 만료
+					res.addCookie(cookies[i]); // 쿠키 추가해서 삭제
+				}
+			}
+			
+		}
 		
 		String msg="";
 		String loc="";
@@ -119,7 +141,7 @@ public class MemberController {
 	@RequestMapping("/logout.hd") // 로그아웃 시 호출됨
 	public String logout(HttpSession session) {
 		session.invalidate();
-		return "redirect:/index.jsp";
+		return "redirect:/";
 	}
 	
 	@RequestMapping("/stuIdSearch.hd")
@@ -251,6 +273,30 @@ public class MemberController {
 		return "common/msg";
 	}
 	
+	
+	@RequestMapping(value="/loginCookieByAjax.hd", method=RequestMethod.POST)
+	@ResponseBody
+	public String loginCookieByAjax(HttpSession session, HttpServletRequest req, HttpServletResponse res) { // 로그인 화면에서 학생, 교수, 교직원 중에 클릭하면
+		System.out.println("/loginCookieByAjax.hd가 호출됨");
+		
+		String loginType=req.getParameter("loginType");
+		System.out.println("loginType:"+loginType);
+		Cookie loginTypeC=new Cookie("loginType", loginType); // 쿠키 생성하기
+		loginTypeC.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+		res.addCookie(loginTypeC); // 쿠키 추가
+		
+		
+		ObjectMapper mapper=new ObjectMapper();
+		String jsonStr="";
+		  try {
+			jsonStr=mapper.writeValueAsString(loginType); // 매개변수에 배열도 들어갈 수 있다!! 매우 편리하다!! 자바스크립트 객체 형식으로 변환 해준다.
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  res.setContentType("application/json;charset=utf-8"); // 인코딩 설정하기
+		return jsonStr;
+	}
 
 }
 

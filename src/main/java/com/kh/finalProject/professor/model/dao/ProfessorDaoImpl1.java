@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
 import com.kh.finalProject.professor.model.vo.ProfBoardAttachment;
@@ -71,8 +72,8 @@ public class ProfessorDaoImpl1 implements ProfessorDao1 {
 	}
 	//교수뷰
 	@Override
-	public List<Subject> professorView(SqlSessionTemplate session, String profId) {
-		return session.selectList("professor1.professorView",profId);
+	public List<Subject> professorView(SqlSessionTemplate session, InfoForProfSubject ifps) {
+		return session.selectList("professor1.professorView", ifps);
 	}
 	@Override
 	public Professor selectPwd(SqlSessionTemplate session, String profId) {
@@ -224,5 +225,10 @@ public class ProfessorDaoImpl1 implements ProfessorDao1 {
 	@Override
 	public List<Map<String,String>> myPlanResult(SqlSessionTemplate session, String profId){
 		return session.selectList("professor1.myPlanResult",profId);
+	}
+	
+	@Override
+	public List<Subject> professorView2(SqlSessionTemplate session, String profId) {
+		return session.selectList("professor1.professorView2", profId);
 	}
 }

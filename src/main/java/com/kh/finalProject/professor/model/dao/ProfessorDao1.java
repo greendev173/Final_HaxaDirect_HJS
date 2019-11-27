@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
 import com.kh.finalProject.professor.model.vo.ProfBoardAttachment;
@@ -36,7 +37,8 @@ public interface ProfessorDao1 {
 	//강의 개설 YN
 	int subjectYn(SqlSessionTemplate session, String subCode);
 	//교수뷰
-	List<Subject> professorView(SqlSessionTemplate session,String profId);
+	List<Subject> professorView(SqlSessionTemplate session, InfoForProfSubject ifps);
+	List<Subject> professorView2(SqlSessionTemplate session, String profId);
 	//교수 정보수정
 	int updateProfessorEnd(SqlSessionTemplate session, Professor p);
 	//교수 비번

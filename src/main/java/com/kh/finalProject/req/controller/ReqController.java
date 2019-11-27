@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class ReqController {
 	@RequestMapping(value="/ajax/reqList.hd")
 	@ResponseBody
 	public String reqList(Model model, @RequestParam(value="index", required=false, defaultValue="0" ) int index, @RequestParam(value="cPage",required=false,defaultValue="1")int cPage,
-			HttpServletResponse res) {
+			HttpServletResponse res, HttpServletRequest req) {
 		int numPerPage=5;
 		ObjectMapper mapper=new ObjectMapper();
 		List<Req> allList=service.reqList(index, cPage, numPerPage);
@@ -64,7 +65,7 @@ public class ReqController {
 		int totalData=service.selectReqCount(index);
 		Map map=new HashMap();
 		map.put("allList",allList);
-		map.put("pageBar",PageFactory.getAjaxPageBar(index,totalData,cPage,numPerPage,"/finalProject/ajax/reqList.hd"));
+		map.put("pageBar",PageFactory.getAjaxPageBar(index,totalData,cPage,numPerPage, req.getContextPath()+"/ajax/reqList.hd"));
 		
 		try {
 			jsonStr=mapper.writeValueAsString(map);

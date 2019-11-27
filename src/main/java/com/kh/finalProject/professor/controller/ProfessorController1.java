@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.finalProject.common.encrypt.MyEncrypt;
 import com.kh.finalProject.professor.common.PageFactory;
 import com.kh.finalProject.professor.model.service.ProfessorService1;
+import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
 import com.kh.finalProject.professor.model.vo.ProfBoardAttachment;
@@ -223,8 +225,32 @@ public class ProfessorController1 {
 			e.printStackTrace();
 		}
 		
+		//////////////////////
+		Date date=new Date();
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+		System.out.println("오늘날짜:"+df.format(date));
+		String today=df.format(date);
 		
-		List<Subject> p = service.professorView(profId);
+		System.out.println("금년도:"+today.substring(0, 4));
+		int todayMonth=Integer.parseInt(today.substring(5, 7));
+		System.out.println("금월:"+todayMonth);
+		String acaYear=today.substring(0, 4);
+		String acaSemester="";
+		if(todayMonth>=1&&todayMonth<=6) {
+		acaSemester="1";
+		}else if(todayMonth>=7&&todayMonth<=12) {
+		acaSemester="2";
+		}
+		
+		System.out.println("acaYear:"+acaYear);
+		System.out.println("acaSemester:"+acaSemester);
+		/////////////////////
+		InfoForProfSubject ifps=new InfoForProfSubject();
+		ifps.setProfId(profId);
+		ifps.setAcaYear(acaYear);
+		ifps.setAcaSemester(acaSemester);
+		
+		List<Subject> p = service.professorView(ifps);
 		
 		logger.info("리스트 : "+p);
 		
@@ -248,7 +274,32 @@ public class ProfessorController1 {
 			e.printStackTrace();
 		}
 		
-		List<Subject> p = service.professorView(profId);
+		//////////////////////
+		Date date=new Date();
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+		System.out.println("오늘날짜:"+df.format(date));
+		String today=df.format(date);
+		
+		System.out.println("금년도:"+today.substring(0, 4));
+		int todayMonth=Integer.parseInt(today.substring(5, 7));
+		System.out.println("금월:"+todayMonth);
+		String acaYear=today.substring(0, 4);
+		String acaSemester="";
+		if(todayMonth>=1&&todayMonth<=6) {
+		acaSemester="1";
+		}else if(todayMonth>=7&&todayMonth<=12) {
+		acaSemester="2";
+		}
+		
+		System.out.println("acaYear:"+acaYear);
+		System.out.println("acaSemester:"+acaSemester);
+		/////////////////////
+		InfoForProfSubject ifps=new InfoForProfSubject();
+		ifps.setProfId(profId);
+		ifps.setAcaYear(acaYear);
+		ifps.setAcaSemester(acaSemester);
+		
+		List<Subject> p = service.professorView(ifps);
 		
 		model.addAttribute("prof",p);
 		

@@ -23,79 +23,136 @@
   <link rel="stylesheet" href="${path }/resources/assets/vendors/base/vendor.bundle.base.css">
   <link rel="stylesheet" href="${path }/resources/css/modal.css">
 <script>
-$(function(){
-   var emparr="";
+
+function clickStu() {
+	var emparr="";
+	
+	$(".login_stu").css("backgroundColor","rgba(34,174,216)");
+    $(".login_pro").css("backgroundColor","rgba(222,99,91,0.5)");
+    $(".login_emp").css("backgroundColor","rgba(49,196,26,0.5)");
+
+    emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
+    emparr+="<input type='hidden' name='loginNo' value='s'/>"
+    emparr+="<input type='text' name='loginId' placeholder='학번을 입력해주세요' class='form-control input-md'>";
+    emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
+    emparr+="<div class='spacing'>";
+    emparr+="<span><a href='#' onclick='idSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>학번 찾기</a></span> / ";
+    emparr+="<span><a href='#' onclick='pwSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>비밀번호 찾기</a></span><br/></div>";
+    emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
+    emparr+="<input type='submit' class='btn btn-info btn-sm pull-right' style='font-weight:bold;' value='로그인'>";
+    emparr+="<button type='button' id='enrollBtn' class='btn btn-info btn-sm pull-right adm_btn' style='font-weight:bold;'>입학신청</button></form>"
+    $(".panel-heading").html("<h3 class='panel-title'>학생 로그인</h3>");
+    $("#panel-heading").css("backgroundColor", "rgba(34,174,216)");
+    $(".col-md-7").html(emparr);
+}
+
+function clickProf() {
+	var emparr="";
+	
+	$(".login_pro").css("backgroundColor","rgba(222,99,91)");
+    $(".login_stu").css("backgroundColor","rgba(91,192,222,0.7)");
+    $(".login_emp").css("backgroundColor","rgba(49,196,26,0.5)");
+    
+    emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
+    emparr+="<input type='hidden' name='loginNo'value='p'/>"
+    emparr+="<input type='text' name='loginId' placeholder='사번을 입력해주세요' class='form-control input-md'>";
+    emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
+    emparr+="<div class='spacing'>";
+    emparr+="<span><a href='#' onclick='empIdSearchModal();' style='color:rgba(222,99,91); font-weight:bold;'>교번 찾기 </a></span><br/></div>";
+    emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
+    emparr+="<input id='loginProf' type='submit' class='btn btn-info_prof btn-sm pull-right' style='font-weight:bold;' value='로그인'></form>";
+    $("#panel-heading").html("<h3 class='panel-title'>교수 로그인</h3>");
+    $("#panel-heading").css("backgroundColor", "rgba(222,99,91)");
+    $("#empIdSearchclose").next().html("교번 찾기").css("color", "rgba(222,99,91)");
+    $("#empSendBtn").removeClass("btn-info_emp");
+    $("#empSendBtn").addClass("btn-info_prof");
+    $("#empIdSearchclose1").removeClass("btn-info_emp");
+    $("#empIdSearchclose1").addClass("btn-info_prof");
+    $(".col-md-7").html(emparr);
+}
+
+function clickEmp() {
+	var emparr="";
+	
+	$(".login_emp").css("backgroundColor","rgba(49,196,26)");
+    $(".login_stu").css("backgroundColor","rgba(91,192,222,0.7)");
+    $(".login_pro").css("backgroundColor","rgba(222,99,91,0.7)");
+
+    emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
+    emparr+="<input type='hidden' name='loginNo'value='e'/>"
+    emparr+="<input type='text' name='loginId' placeholder='사번을 입력해주세요' class='form-control input-md'>";
+    emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
+    emparr+="<div class='spacing'>";
+    emparr+="<span><a href='#' onclick='empIdSearchModal();' style='color:rgba(49,196,26); font-weight:bold;'>사번 찾기 </a></span><br/></div>";
+    emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
+    emparr+="<input type='submit' class='btn btn-info_emp btn-sm pull-right' style='font-weight:bold;' value='로그인'></form>";
+    $(".panel-heading").html("<h3 class='panel-title'>교직원 로그인</h3>");
+    $("#panel-heading").css("backgroundColor", "rgba(49,196,26)");
+    $("#empIdSearchclose").next().html("사번 찾기").css("color", "rgba(49,196,26)");
+    $("#empSendBtn").removeClass("btn-info_prof");
+    $("#empSendBtn").addClass("btn-info_emp");
+    $("#empIdSearchclose1").removeClass("btn-info_prof");
+    $("#empIdSearchclose1").addClass("btn-info_emp");
+    $(".col-md-7").html(emparr);
+}
+
+
+function loginTypeCookie(loginType) {
+	$.ajax({
+  	  url:"${path}/loginCookieByAjax.hd",
+  	  type: 'POST',
+  	  data:{"loginType": loginType},
+  	  success:function(data) {
+  		  // console.log("쿠키 등록됨:"+data);
+  	  }
+    });
+}
+
+
+$(function(){ // html 페이지가 로드되면
+	<%
+		Cookie[] cookies=request.getCookies();
+		String loginType="";
+		String idSave=null;
+		if(cookies!=null) {
+			for(int i=0; i<cookies.length; i++) {
+				if(cookies[i].getName().equals("loginType")) {
+					loginType=cookies[i].getValue();
+				}else if(cookies[i].getName().equals("idSave")) {
+					idSave=cookies[i].getValue();
+				}
+			}
+		}
+	
+		if(loginType.equals("stu")) { %>
+		 clickStu();
+	<%	}else if(loginType.equals("prof")) { %>
+		 clickProf();
+	<%	}else if(loginType.equals("emp")) { %>
+	     clickEmp();
+	<%	} 
+		
+		if(idSave!=null) { %>
+		$("input:checkbox[name='idSave']").prop("checked", true);
+		$("input[name=loginId]").val("<%=idSave%>");
+		// console.log("idsave:<%=idSave%>");
+	<%	}
+	%>
+	
    $(".login_stu").click(function(){
-      $(".login_stu").css("backgroundColor","rgba(34,174,216)");
-      $(".login_pro").css("backgroundColor","rgba(222,99,91,0.5)");
-      $(".login_emp").css("backgroundColor","rgba(49,196,26,0.5)");
-      $.ajax({
-          success:function(){
-          emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
-          emparr+="<input type='hidden' name='loginNo' value='s'/>"
-          emparr+="<input type='text' name='loginId' placeholder='학번을 입력해주세요' class='form-control input-md'>";
-          emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
-          emparr+="<div class='spacing'>";
-          emparr+="<span><a href='#' onclick='idSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>학번 찾기</a></span> / ";
-          emparr+="<span><a href='#' onclick='pwSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>비밀번호 찾기</a></span><br/></div>";
-          emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
-          emparr+="<input type='submit' class='btn btn-info btn-sm pull-right' style='font-weight:bold;' value='로그인'>";
-          emparr+="<button type='button' id='enrollBtn' class='btn btn-info btn-sm pull-right adm_btn' style='font-weight:bold;'>입학신청</button></form>"
-         $(".panel-heading").html("<h3 class='panel-title'>학생 로그인</h3>");
-          $("#panel-heading").css("backgroundColor", "rgba(34,174,216)");
-          $(".col-md-7").html(emparr);
-          }
-      });
+	   clickStu();
+	   loginTypeCookie("stu");
    });
+   
+   
    $(".login_pro").click(function(){
-      $(".login_pro").css("backgroundColor","rgba(222,99,91)");
-      $(".login_stu").css("backgroundColor","rgba(91,192,222,0.7)");
-      $(".login_emp").css("backgroundColor","rgba(49,196,26,0.5)");
-      $.ajax({
-          success:function(){
-          emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
-          emparr+="<input type='hidden' name='loginNo'value='p'/>"
-          emparr+="<input type='text' name='loginId' placeholder='사번을 입력해주세요' class='form-control input-md'>";
-          emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
-          emparr+="<div class='spacing'>";
-          emparr+="<span><a href='#' onclick='empIdSearchModal();' style='color:rgba(222,99,91); font-weight:bold;'>교번 찾기 </a></span><br/></div>";
-          emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
-          emparr+="<input id='loginProf' type='submit' class='btn btn-info_prof btn-sm pull-right' style='font-weight:bold;' value='로그인'></form>";
-         $("#panel-heading").html("<h3 class='panel-title'>교수 로그인</h3>");
-         $("#panel-heading").css("backgroundColor", "rgba(222,99,91)");
-         $("#empIdSearchclose").next().html("교번 찾기").css("color", "rgba(222,99,91)");
-         $("#empSendBtn").removeClass("btn-info_emp");
-         $("#empSendBtn").addClass("btn-info_prof");
-         $("#empIdSearchclose1").removeClass("btn-info_emp");
-         $("#empIdSearchclose1").addClass("btn-info_prof");
-          $(".col-md-7").html(emparr);
-          }
-      });
+	   clickProf();
+	   loginTypeCookie("prof");
    });
+   
    $(".login_emp").click(function(){
-      $(".login_emp").css("backgroundColor","rgba(49,196,26)");
-      $(".login_stu").css("backgroundColor","rgba(91,192,222,0.7)");
-      $(".login_pro").css("backgroundColor","rgba(222,99,91,0.7)");
-      $.ajax({
-          success:function(){
-          emparr="<form class='form-horizontal' action='${path }/login.hd' method='post'>";
-          emparr+="<input type='hidden' name='loginNo'value='e'/>"
-          emparr+="<input type='text' name='loginId' placeholder='사번을 입력해주세요' class='form-control input-md'>";
-          emparr+="<input type='password' name=loginPwd placeholder='비밀번호를 입력해주세요' class='form-control input-md input_pwd'>";
-          emparr+="<div class='spacing'>";
-          emparr+="<span><a href='#' onclick='empIdSearchModal();' style='color:rgba(49,196,26); font-weight:bold;'>사번 찾기 </a></span><br/></div>";
-          emparr+="<label><input type='checkbox' name='idSave' /> <small>아이디 저장</small></label>";
-          emparr+="<input type='submit' class='btn btn-info_emp btn-sm pull-right' style='font-weight:bold;' value='로그인'></form>";
-         $(".panel-heading").html("<h3 class='panel-title'>교직원 로그인</h3>");
-         $("#panel-heading").css("backgroundColor", "rgba(49,196,26)");
-         $("#empIdSearchclose").next().html("사번 찾기").css("color", "rgba(49,196,26)");
-         $("#empSendBtn").removeClass("btn-info_prof");
-         $("#empSendBtn").addClass("btn-info_emp");
-         $("#empIdSearchclose1").removeClass("btn-info_prof");
-         $("#empIdSearchclose1").addClass("btn-info_emp");
-          $(".col-md-7").html(emparr);
-          }
-      });
+	   clickEmp();
+	   loginTypeCookie("emp");
    });
 });
 
@@ -693,9 +750,7 @@ $(function() {
             $('.selectCol').html(colListHtml);
                $('.selectCol').change(function(){
                $("#selCol").attr('disabled',true);
-         
-      
-   })
+   			})
          
          }
       })
