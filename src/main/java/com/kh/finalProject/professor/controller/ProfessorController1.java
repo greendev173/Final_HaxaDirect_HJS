@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kh.finalProject.common.encrypt.MyEncrypt;
 import com.kh.finalProject.professor.common.PageFactory;
 import com.kh.finalProject.professor.model.service.ProfessorService1;
+import com.kh.finalProject.professor.model.vo.InfoForProfSchedule;
 import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
@@ -251,10 +251,12 @@ public class ProfessorController1 {
 		ifps.setAcaSemester(acaSemester);
 		
 		List<Subject> p = service.professorView(ifps);
+		String deptName=service.selectDeptNameOne(profId);
 		
 		logger.info("리스트 : "+p);
 		
 		model.addAttribute("prof",p);
+		model.addAttribute("deptName", deptName);
 		
 		return "professor/professorView";
 	}
@@ -678,6 +680,7 @@ public class ProfessorController1 {
 	@RequestMapping("/professor/subjectCodeView")
 	public String subjectCodeView(@RequestParam(value="cPage",required=false,defaultValue="1")int cPage, Model model,String profId, HttpServletRequest req) {
 		
+		System.out.println("profId:"+profId);
 		int numPerPage = 5;
 		
 		List<Subject> list = service.subjectCodeView(cPage,numPerPage,profId); //
@@ -880,11 +883,38 @@ public class ProfessorController1 {
 		
 		
 		logger.info("deptCode : "+deptCode);
-		List<Map<String,String>> schedule = service.deptProfScheduleView(deptCode);
+		//////////////////////
+		Date date=new Date();
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+//		System.out.println("오늘날짜:"+df.format(date));
+		String today=df.format(date);
+		
+//		System.out.println("금년도:"+today.substring(0, 4));
+		int todayMonth=Integer.parseInt(today.substring(5, 7));
+//		System.out.println("금월:"+todayMonth);
+		String acaYear=today.substring(0, 4);
+		String acaSemester="";
+		if(todayMonth>=1&&todayMonth<=6) {
+		acaSemester="1";
+		}else if(todayMonth>=7&&todayMonth<=12) {
+		acaSemester="2";
+		}
+		
+//		System.out.println("acaYear:"+acaYear);
+//		System.out.println("acaSemester:"+acaSemester);
+		/////////////////////
+		InfoForProfSchedule ifps=new InfoForProfSchedule();
+		ifps.setDeptCode(deptCode);
+		ifps.setAcaYear(acaYear);
+		ifps.setAcaSemester(acaSemester);
+		
+		List<Map<String,String>> schedule = service.deptProfScheduleView(ifps);
 		List<Map<String,String>> deptCodeView = service.deptCodeView(deptCode);
 		logger.info("교수별 강의시간표 : " + schedule);
 		model.addAttribute("schedule",schedule);
 		model.addAttribute("deptCodeView",deptCodeView);
+		model.addAttribute("acaYear",acaYear);
+		model.addAttribute("acaSemester",acaSemester);
 		
 		return "professor/deptProfSchedule";
 	}
@@ -894,7 +924,32 @@ public class ProfessorController1 {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		List<Map<String,String>> selectDeptCode = service.selectDeptCode(deptCode);
+		//////////////////////
+		Date date=new Date();
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+		//System.out.println("오늘날짜:"+df.format(date));
+		String today=df.format(date);
+		
+		//System.out.println("금년도:"+today.substring(0, 4));
+		int todayMonth=Integer.parseInt(today.substring(5, 7));
+		//System.out.println("금월:"+todayMonth);
+		String acaYear=today.substring(0, 4);
+		String acaSemester="";
+		if(todayMonth>=1&&todayMonth<=6) {
+		acaSemester="1";
+		}else if(todayMonth>=7&&todayMonth<=12) {
+		acaSemester="2";
+		}
+		
+		//System.out.println("acaYear:"+acaYear);
+		//System.out.println("acaSemester:"+acaSemester);
+		/////////////////////
+		InfoForProfSchedule ifps=new InfoForProfSchedule();
+		ifps.setDeptCode(deptCode);
+		ifps.setAcaYear(acaYear);
+		ifps.setAcaSemester(acaSemester);
+
+		List<Map<String,String>> selectDeptCode = service.deptProfScheduleView(ifps);
 		List<Map<String,String>> selectDeptName = service.selectDeptName(deptCode);
 		
 		ObjectMapper mapper = new ObjectMapper();

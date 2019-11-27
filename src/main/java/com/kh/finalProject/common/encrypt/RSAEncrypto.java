@@ -29,13 +29,13 @@ public class RSAEncrypto implements MyEncrypt {
 	public RSAEncrypto() {
 		String path = this.getClass().getResource("/").getPath();
 		//작업용 경로(sts 툴에서 실행 시)
-//		path = path.substring(0, path.lastIndexOf("/target"));
-//		File f = new File(path + "/src/main/webapp/WEB-INF/keys.hd");
+		path = path.substring(0, path.lastIndexOf("/target"));
+		File f = new File(path + "/src/main/webapp/WEB-INF/keys.hd");
 		
 		
 //		리눅스 서버에 war파일로 업로드 할 때는 아래로 교체	
-		path = path.substring(0, path.lastIndexOf("/classes"));	
-		File f = new File(path + "/keys.hd");
+//		path = path.substring(0, path.lastIndexOf("/classes"));	
+//		File f = new File(path + "/keys.hd");
 		
 		if(f.exists()) {
 			try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {

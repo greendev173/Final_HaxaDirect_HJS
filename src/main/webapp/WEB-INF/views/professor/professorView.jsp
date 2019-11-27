@@ -74,8 +74,8 @@
 									</td>
 								</tr>
 								<tr>
-									<th>학과번호</th>
-									<td><c:out value="${loginMember.deptCode }"/></td>
+									<th>학과명 [학과번호]</th>
+									<td>${deptName } [<c:out value="${loginMember.deptCode }"/>]</td>
 								</tr>
 								<tr>
 									<th>이메일</th>
@@ -129,7 +129,7 @@
 							
 							<div style="font-weight:bold;text-align:center;">
 								<c:forEach items="${prof }" var="p" varStatus="v">
-									<div style="border-bottom:1px solid lightgray;"><span style="color:royalblue;">${v.count} - ${p.subCode }</span><br><span style="font-size:13px;">[${p.subName}]<br>(${p.subDate},${p.subTime})</span></div><br/>
+									<div style="border-bottom:1px solid lightgray;"><span style="color:royalblue;">${v.count}번째 - ${p.subCode }</span><br><span style="font-size:13px;">[${p.subName}]<br>(${p.subDate},${p.subTime})</span></div><br/>
 								</c:forEach>
 							</div>
 						</div>

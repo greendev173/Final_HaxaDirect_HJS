@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="${path }/resources/css/modal.css">
 <script>
 
-function clickStu() {
+function loginViewStu() {
 	var emparr="";
 	
 	$(".login_stu").css("backgroundColor","rgba(34,174,216)");
@@ -46,7 +46,7 @@ function clickStu() {
     $(".col-md-7").html(emparr);
 }
 
-function clickProf() {
+function loginViewProf() {
 	var emparr="";
 	
 	$(".login_pro").css("backgroundColor","rgba(222,99,91)");
@@ -71,7 +71,7 @@ function clickProf() {
     $(".col-md-7").html(emparr);
 }
 
-function clickEmp() {
+function loginViewEmp() {
 	var emparr="";
 	
 	$(".login_emp").css("backgroundColor","rgba(49,196,26)");
@@ -97,7 +97,7 @@ function clickEmp() {
 }
 
 
-function loginTypeCookie(loginType) {
+/* function loginTypeCookie(loginType) { // 로그인 화면 누구 전용인지 쿠키로 저장
 	$.ajax({
   	  url:"${path}/loginCookieByAjax.hd",
   	  type: 'POST',
@@ -106,16 +106,16 @@ function loginTypeCookie(loginType) {
   		  // console.log("쿠키 등록됨:"+data);
   	  }
     });
-}
+} */
 
 
 $(function(){ // html 페이지가 로드되면
 	
-	var windowWidth=$(window).width();
-	console.log("windowWidth:"+windowWidth);
-	if(windowWidth>990) {
+	var windowWidth=$(window).width(); // 현재 창 크기 측정
+	// console.log("windowWidth:"+windowWidth);
+	if(windowWidth>990) { // 현재 로드된 화면의 창 크기가 990보다 크면
 		$("#containerDiv").css("margin-top", "100px");
-	}else {
+	}else { // 현재 로드된 화면의 창 크기가 990과 같거나 작으면
 		$("#containerDiv").css("margin-top", "0px");
 	}
 	
@@ -134,11 +134,11 @@ $(function(){ // html 페이지가 로드되면
 		}
 	
 		if(loginType.equals("stu")) { %>
-		 clickStu();
+		 loginViewStu();
 	<%	}else if(loginType.equals("prof")) { %>
-		 clickProf();
+		 loginViewProf();
 	<%	}else if(loginType.equals("emp")) { %>
-	     clickEmp();
+	     loginViewEmp();
 	<%	} 
 		
 		if(idSave!=null) { %>
@@ -149,28 +149,28 @@ $(function(){ // html 페이지가 로드되면
 	%>
 	
    $(".login_stu").click(function(){
-	   clickStu();
-	   loginTypeCookie("stu");
+	   loginViewStu(); // 로그인 화면 학생 전용으로 변경
+	   // loginTypeCookie("stu");
    });
    
    
    $(".login_pro").click(function(){
-	   clickProf();
-	   loginTypeCookie("prof");
+	   loginViewProf(); // 로그인 화면 교수 전용으로 변경
+	   // loginTypeCookie("prof");
    });
    
    $(".login_emp").click(function(){
-	   clickEmp();
-	   loginTypeCookie("emp");
+	   loginViewEmp(); // 로그인 화면 직원 전용으로 변경
+	   // loginTypeCookie("emp");
    });
 });
 
-$(window).resize(function(){
+$(window).resize(function(){ // 창 화면을 계속 측정
 	var windowWidth=$(window).width();
 	// console.log("windowWidth:"+windowWidth);
-	if(windowWidth>990) {
-		$("#containerDiv").css("margin-top", "100px");
-	}else {
+	if(windowWidth>990) { // 창 크기가 990보다 크면
+		$("#containerDiv").css("margin-top", "100px"); 
+	}else { // 같거나 작으면
 		$("#containerDiv").css("margin-top", "0px");
 	}
 });

@@ -18,10 +18,14 @@
 	@import url('https://fonts.googleapis.com/css?family=Jua&display=swap');
 	
 		tr, td, th {
-			text-align: left;
+			text-align:center;
 			font-size: 13px;
-		
 			cursor: auto;
+		}
+		
+		tr, td, th, input {
+			text-align:center;
+			/* border: 1px solid red; */
 		}
 		
 		input{
@@ -160,44 +164,47 @@
 			<tr>
 			
 				<th>지도교수</th>
-				<td><input class="form-control"  type="text" value="${student.profId}" required disabled/></td>
-				<th>학과코드</th>
-				<td><input class="form-control" type="text" value="${student.deptCode}" required disabled/></td>
-				<th>계좌번호</th>
-				
-				
 				<td>
-				<select class="form-control" id="bankName" name="bankName" style="display:inline-block;color:black" >
-				<c:if test="${fn:split(student.stuAccount,'ACCDELIMETER')[0] ne null}">
-				<option value="${fn:split(student.stuAccount,'ACCDELIMETER')[0]}">${fn:split(student.stuAccount,'ACCDELIMETER')[0]}</option>
-				</c:if>
-				<c:if test="${fn:split(student.stuAccount,'ACCDELIMETER')[0] eq null}">
-				<option value="">은행을 선택하세요</option>
-				</c:if>
-			    <option value="카카오">카카오뱅크</option>
-			    <option value="국민">국민은행</option>
-			    <option value="기업">기업은행</option>
-			    <option value="농협">농협은행</option>
-			    <option value="신한">신한은행</option>
-			    <option value="신업">신업은행</option>
-			    <option value="우리">우리은행</option>
-			    <option value="한국씨티">한국씨티은행</option>
-			    <option value="하나">KEB하나은행</option>
-			    <option value="제일">SC제일은행</option>
-			    <option value="제일">경남은행</option>
-			    <option value="광주">광주은행</option>
-			    <option value="대구">대구은행</option>
-			    <option value="도이치">도이치은행</option>
-			    <option value="뱅크오브아메리카">뱅크오브아메리카</option>
-			    <option value="부산">부산은행</option>
-			    <option value="산림조합">산림조합중앙회</option>
-			    <option value="저축">저축은행</option>
-				</select>
-				
-	
-				<input class="form-control" type="text" id="AccountName" name="AccountName" value="${fn:split(student.stuAccount,'ACCDELIMETER')[2]}"  style="width:100px;height:33px;display:inline-block" placeholder="예금주명" required/>
-				<input class="form-control" type="text" id="AccountNumber" name="AccountNumber" value="${fn:split(student.stuAccount,'ACCDELIMETER')[1]}"  style="width:150px" placeholder="계좌번호" required/>
-				
+					<input class="form-control"  type="text" value="${student.profId}" required disabled/>
+					<input class="form-control" type="text" value="${student.profName} 교수" required disabled />
+				</td>
+				<th>학부명<br><br>학과명<br><br>학과코드</th>
+				<td>
+					<input class="form-control" type="text" value="${student.colName}" required disabled />
+					<input class="form-control" type="text" value="${student.deptName}" required disabled />
+					<input class="form-control" type="text" value="${student.deptCode}" required disabled />
+				</td>
+				<th>계좌번호</th>
+				<td>
+					<select class="form-control" id="bankName" name="bankName" style="display:inline-block;color:black" >
+					<c:if test="${fn:split(student.stuAccount,'ACCDELIMETER')[0] ne null}">
+					<option value="${fn:split(student.stuAccount,'ACCDELIMETER')[0]}">${fn:split(student.stuAccount,'ACCDELIMETER')[0]}</option>
+					</c:if>
+					<c:if test="${fn:split(student.stuAccount,'ACCDELIMETER')[0] eq null}">
+					<option value="">은행을 선택하세요</option>
+					</c:if>
+				    <option value="카카오">카카오뱅크</option>
+				    <option value="국민">국민은행</option>
+				    <option value="기업">기업은행</option>
+				    <option value="농협">농협은행</option>
+				    <option value="신한">신한은행</option>
+				    <option value="신업">신업은행</option>
+				    <option value="우리">우리은행</option>
+				    <option value="한국씨티">한국씨티은행</option>
+				    <option value="하나">KEB하나은행</option>
+				    <option value="제일">SC제일은행</option>
+				    <option value="제일">경남은행</option>
+				    <option value="광주">광주은행</option>
+				    <option value="대구">대구은행</option>
+				    <option value="도이치">도이치은행</option>
+				    <option value="뱅크오브아메리카">뱅크오브아메리카</option>
+				    <option value="부산">부산은행</option>
+				    <option value="산림조합">산림조합중앙회</option>
+				    <option value="저축">저축은행</option>
+					</select>
+		
+					<input class="form-control" type="text" id="AccountName" name="AccountName" value="${fn:split(student.stuAccount,'ACCDELIMETER')[2]}"  style="width:100px;height:33px;display:inline-block" placeholder="예금주명" required/>
+					<input class="form-control" type="text" id="AccountNumber" name="AccountNumber" value="${fn:split(student.stuAccount,'ACCDELIMETER')[1]}"  style="width:150px" placeholder="계좌번호" required/>
 				</td>
 			</tr>
 			<tr>

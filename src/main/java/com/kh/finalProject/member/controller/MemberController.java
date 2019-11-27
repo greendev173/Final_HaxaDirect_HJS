@@ -74,7 +74,7 @@ public class MemberController {
 //	}
 
 	@RequestMapping(value="/login.hd", method=RequestMethod.POST)
-	public String Login1(
+	public String Login(
 			HttpSession session,
 			HttpServletRequest req,
 			HttpServletResponse res,
@@ -83,13 +83,13 @@ public class MemberController {
 			@RequestParam(value="loginPwd") String loginPwd
 			) {
 		
-		System.out.println("idSave:"+req.getParameter("idSave"));
+//		System.out.println("idSave:"+req.getParameter("idSave"));
 		
-		if(req.getParameter("idSave")!=null&&req.getParameter("idSave").equals("on")) {
+		if(req.getParameter("idSave")!=null&&req.getParameter("idSave").equals("on")) { // 아이디 저장 체크박스 체크 했으면
 			Cookie idSave=new Cookie("idSave", loginId);
 			idSave.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
 			res.addCookie(idSave); // 쿠키 추가
-		}else {
+		}else { // 아이디 저장 체크박스 체크 안했으면
 			Cookie[] cookies=req.getCookies();
 			for(int i=0; i<cookies.length; i++) {
 				if(cookies[i].getName().equals("idSave")) {
@@ -104,6 +104,11 @@ public class MemberController {
 		String msg="";
 		String loc="";
 		if(loginNo.equals("s")) {
+			Cookie loginTypeC=new Cookie("loginType", "stu"); // 학생 화면 전용 쿠키 생성하기
+			loginTypeC.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+			res.addCookie(loginTypeC); // 쿠키 추가
+//			System.out.println("loginType:stu");
+			
 			Student stu=stuService.selectOne(loginId);
 			if(stu!=null) {
 				if(bEnc.matches(loginPwd, stu.getStuPw())){
@@ -111,13 +116,23 @@ public class MemberController {
 				}
 			}
 		}else if(loginNo.equals("p")){
+			Cookie loginTypeC=new Cookie("loginType", "prof"); // 교수 화면 전용 쿠키 생성하기
+			loginTypeC.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+			res.addCookie(loginTypeC); // 쿠키 추가
+//			System.out.println("loginType:prof");
+			
 			Professor pro=proService.selectOne(loginId);
 			if(pro!=null) {
 				if(bEnc.matches(loginPwd, pro.getProfPw())){
 					session.setAttribute("loginMember", pro);
 				}
 			}
-		}else{
+		}else if(loginNo.equals("e")){
+			Cookie loginTypeC=new Cookie("loginType", "emp"); // 직원 화면 전용 쿠키 생성하기
+			loginTypeC.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+			res.addCookie(loginTypeC); // 쿠키 추가
+//			System.out.println("loginType:emp");
+			
 			Employee emp=empService.selectOne(loginId);
 			if(emp!=null) {
 				if(bEnc.matches(loginPwd, emp.getEmpPw()) || loginId.equals("E00000000")){
@@ -125,6 +140,7 @@ public class MemberController {
 				}
 			}
 		}
+		
 		if(session != null && session.getAttribute("loginMember")!=null) {
 			msg="로그인 되었습니다.";
 			loc="/main.hd";
@@ -274,29 +290,29 @@ public class MemberController {
 	}
 	
 	
-	@RequestMapping(value="/loginCookieByAjax.hd", method=RequestMethod.POST)
-	@ResponseBody
-	public String loginCookieByAjax(HttpSession session, HttpServletRequest req, HttpServletResponse res) { // 로그인 화면에서 학생, 교수, 교직원 중에 클릭하면
-		System.out.println("/loginCookieByAjax.hd가 호출됨");
-		
-		String loginType=req.getParameter("loginType");
-		System.out.println("loginType:"+loginType);
-		Cookie loginTypeC=new Cookie("loginType", loginType); // 쿠키 생성하기
-		loginTypeC.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
-		res.addCookie(loginTypeC); // 쿠키 추가
-		
-		
-		ObjectMapper mapper=new ObjectMapper();
-		String jsonStr="";
-		  try {
-			jsonStr=mapper.writeValueAsString(loginType); // 매개변수에 배열도 들어갈 수 있다!! 매우 편리하다!! 자바스크립트 객체 형식으로 변환 해준다.
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		  res.setContentType("application/json;charset=utf-8"); // 인코딩 설정하기
-		return jsonStr;
-	}
+//	@RequestMapping(value="/loginCookieByAjax.hd", method=RequestMethod.POST)
+//	@ResponseBody
+//	public String loginCookieByAjax(HttpSession session, HttpServletRequest req, HttpServletResponse res) { // 로그인 화면에서 학생, 교수, 교직원 중에 클릭하면
+//		System.out.println("/loginCookieByAjax.hd가 호출됨");
+//		
+//		String loginType=req.getParameter("loginType");
+//		System.out.println("loginType:"+loginType);
+//		Cookie loginTypeC=new Cookie("loginType", loginType); // 쿠키 생성하기
+//		loginTypeC.setPath("/"); // 해당 쿠키의 유효한 디렉토리를 "/"로 설정
+//		res.addCookie(loginTypeC); // 쿠키 추가
+//		
+//		
+//		ObjectMapper mapper=new ObjectMapper();
+//		String jsonStr="";
+//		  try {
+//			jsonStr=mapper.writeValueAsString(loginType); // 매개변수에 배열도 들어갈 수 있다!! 매우 편리하다!! 자바스크립트 객체 형식으로 변환 해준다.
+//		} catch (JsonProcessingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		  res.setContentType("application/json;charset=utf-8"); // 인코딩 설정하기
+//		return jsonStr;
+//	}
 
 }
 

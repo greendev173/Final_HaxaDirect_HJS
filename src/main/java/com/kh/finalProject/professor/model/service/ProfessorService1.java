@@ -3,8 +3,7 @@ package com.kh.finalProject.professor.model.service;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.multipart.MultipartFile;
-
+import com.kh.finalProject.professor.model.vo.InfoForProfSchedule;
 import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
@@ -64,7 +63,7 @@ public interface ProfessorService1 {
 	//교수 스케줄
 	List<Map<String,String>> profSchedule(String profId);
 	//교수별 스케줄
-	List<Map<String,String>> deptProfScheduleView(String deptCode);
+	List<Map<String,String>> deptProfScheduleView(InfoForProfSchedule ifps);
 	List<Map<String,String>> deptCodeView(String deptCode);
 	//교수별 스케줄 select deptcode
 	List<Map<String,String>> selectDeptCode(String deptCode);
@@ -79,4 +78,6 @@ public interface ProfessorService1 {
 	int totalPlanResult();
 	//내 강의 내역
 	List<Map<String,String>> myPlanResult(String profId);
+	
+	String selectDeptNameOne(String profId);
 }

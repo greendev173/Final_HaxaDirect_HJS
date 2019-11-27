@@ -4,7 +4,14 @@
 
 	<select id="selectStudent" parameterType="string"
 		resultMap="studentResult">
-		SELECT * FROM HD_STUDENT_TB WHERE STU_NO=#{studentNo}
+		SELECT S.*, D.DEPT_NAME, C.COL_NAME, P.PROF_NAME
+		FROM(SELECT * FROM HD_STUDENT_TB WHERE STU_NO=#{studentNo}) S
+		JOIN HD_DEPARTMENT_TB D
+		ON S.DEPT_CODE=D.DEPT_CODE
+		JOIN HD_COLLEGE_TB C
+		ON D.COL_CODE=C.COL_CODE
+		JOIN HD_PROFESSOR_TB P
+		ON S.PROF_ID=P.PROF_ID
 	</select>
 
 	<select id="selectAllClass" parameterType="string" resultType="map">
@@ -377,6 +384,9 @@
 		<result column="STU_IMG_ORINAME" property="stuImgOriname" />
 		<result column="STU_IMG_RENAME" property="stuImgRename" />
 		<result column="STU_ACCOUNT" property="stuAccount" />
+		<result column="DEPT_NAME" property="deptName" />
+		<result column="COL_NAME" property="colName" />
+		<result column="PROF_NAME" property="profName" />
 	</resultMap>
 
 

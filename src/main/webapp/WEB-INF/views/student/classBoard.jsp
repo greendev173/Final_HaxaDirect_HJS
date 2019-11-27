@@ -156,7 +156,7 @@ List<MyClass> myClassList=null;
 <script>
 	<c:if test="${!empty myClassList }">
 	$("#subjectName").change(function() {
-		alert($("#subjectName option:selected").text()+" 과목 게시판을 조회합니다."); 
+		// alert($("#subjectName option:selected").text()+" 과목 게시판을 조회합니다."); 
 		$("#assignmentTitle").html("<h3 class='font-weight-bold mb-0'><c:out value='${acaYear}'/>학년도 <c:out value='${acaSemester}'/>학기 "+$("#subjectName option:selected").text()+" 과제 게시판"+"</h3>");
 		location.href="${path}/student/classBoard.hd?subSeq="+$(this).val();
 	});

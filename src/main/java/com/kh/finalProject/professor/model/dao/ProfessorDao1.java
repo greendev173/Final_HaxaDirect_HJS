@@ -6,6 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.finalProject.professor.model.vo.InfoForProfSchedule;
 import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
@@ -76,7 +77,7 @@ public interface ProfessorDao1 {
 	//교수 시간표
 	List<Map<String,String>> profSchedule(SqlSessionTemplate session, String profId);
 	//교수별 시간표
-	List<Map<String,String>> deptProfScheduleView(SqlSessionTemplate session,String deptCode);
+	List<Map<String,String>> deptProfScheduleView(SqlSessionTemplate session, InfoForProfSchedule ifps);
 	List<Map<String,String>> deptCodeView(SqlSessionTemplate session, String deptCode);
 	//교수별 시간표 deptCode select
 	List<Map<String,String>> selectDeptCode(SqlSessionTemplate session, String deptCode);
@@ -90,5 +91,7 @@ public interface ProfessorDao1 {
 	int totalPlanResult(SqlSessionTemplate session);
 	//내 강의 내역
 	List<Map<String,String>> myPlanResult(SqlSessionTemplate session, String profId);
+	
+	String selectDeptNameOne(SqlSessionTemplate session, String profId);
 
 }

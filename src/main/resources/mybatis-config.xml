@@ -35,5 +35,6 @@
 		<typeAlias type="com.kh.finalProject.professor.model.vo.InfoForProfAssignment" alias="infoForProfAssignment"/>
 		<typeAlias type="com.kh.finalProject.employee.model.vo.NoticeVo" alias="notice"/>
 		<typeAlias type="com.kh.finalProject.student.model.vo.MyClass" alias="myClass"/>
+		<typeAlias type="com.kh.finalProject.professor.model.vo.InfoForProfSchedule" alias="infoForProfSchedule"/>
 	</typeAliases>
 </configuration>

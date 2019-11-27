@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kh.finalProject.professor.model.vo.InfoForProfSchedule;
 import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
@@ -184,8 +185,8 @@ public class ProfessorDaoImpl1 implements ProfessorDao1 {
 	}
 	//교수별 시간표
 	@Override
-	public List<Map<String,String>> deptProfScheduleView(SqlSessionTemplate session, String deptCode){
-		return session.selectList("professor1.deptProfSchedule",deptCode);
+	public List<Map<String,String>> deptProfScheduleView(SqlSessionTemplate session, InfoForProfSchedule ifps){
+		return session.selectList("professor1.deptProfSchedule", ifps);
 	}
 	@Override
 	public List<Map<String,String>> deptCodeView(SqlSessionTemplate session, String deptCode){
@@ -230,5 +231,9 @@ public class ProfessorDaoImpl1 implements ProfessorDao1 {
 	@Override
 	public List<Subject> professorView2(SqlSessionTemplate session, String profId) {
 		return session.selectList("professor1.professorView2", profId);
+	}
+	@Override
+	public String selectDeptNameOne(SqlSessionTemplate session, String profId) {
+		return session.selectOne("professor1.selectDeptNameOne", profId);
 	}
 }

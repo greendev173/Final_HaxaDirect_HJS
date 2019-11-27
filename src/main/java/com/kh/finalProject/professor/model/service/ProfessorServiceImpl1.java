@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.finalProject.professor.model.dao.ProfessorDao1;
+import com.kh.finalProject.professor.model.vo.InfoForProfSchedule;
 import com.kh.finalProject.professor.model.vo.InfoForProfSubject;
 import com.kh.finalProject.professor.model.vo.InsertClass;
 import com.kh.finalProject.professor.model.vo.PlanBoard;
@@ -292,9 +293,9 @@ public class ProfessorServiceImpl1 implements ProfessorService1 {
 	}
 	//교수별 시간표
 	@Override
-	public List<Map<String,String>> deptProfScheduleView(String deptCode){
+	public List<Map<String,String>> deptProfScheduleView(InfoForProfSchedule ifps){
 		
-		List<Map<String,String>> schedule = dao.deptProfScheduleView(session,deptCode);
+		List<Map<String,String>> schedule = dao.deptProfScheduleView(session, ifps);
 		
 		return schedule;
 	}
@@ -348,5 +349,9 @@ public class ProfessorServiceImpl1 implements ProfessorService1 {
 		List<Subject> p = dao.professorView2(session, profId);
 		
 		return p;
+	}
+	@Override
+	public String selectDeptNameOne(String profId) {
+		return dao.selectDeptNameOne(session, profId);
 	}
 }

@@ -156,10 +156,15 @@
 		JOIN HD_SUBJECT_TB S ON (C.SUB_SEQ=S.SUB_SEQ) WHERE C.PROF_ID=#{profId} AND C.OPEN_YN='Y'
 	</select>
 	<!-- 교수별 시간표 -->
-	<select id="deptProfSchedule" parameterType="string" resultType="map">
+	<select id="deptProfSchedule" parameterType="infoForProfSchedule" resultType="map">
 		SELECT S.SUB_YEAR,S.SUB_NAME,S.SUB_ROOM,S.SUB_TIME,S.SUB_DATE,C.SUB_CODE,C.PROF_ID,P.PROF_NAME,D.DEPT_CODE,D.DEPT_NAME 
-		FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON (C.SUB_SEQ=S.SUB_SEQ) JOIN HD_PROFESSOR_TB P ON (C.PROF_ID=P.PROF_ID) 
-		JOIN HD_DEPARTMENT_TB D ON (S.DEPT_CODE=D.DEPT_CODE) WHERE P.DEPT_CODE=#{deptCode} AND C.OPEN_YN='Y'
+		FROM (SELECT SUB_CODE, PROF_ID, SUB_SEQ FROM HD_CLASS_TB WHERE OPEN_YN='Y') C 
+		JOIN (SELECT * FROM HD_SUBJECT_TB WHERE SUB_YEAR=#{acaYear} AND SUB_SEMESTER=#{acaSemester} AND DEPT_CODE=#{deptCode}) S 
+		ON (C.SUB_SEQ=S.SUB_SEQ) 
+		JOIN (SELECT PROF_ID, PROF_NAME FROM HD_PROFESSOR_TB) P 
+		ON (C.PROF_ID=P.PROF_ID) 
+		JOIN HD_DEPARTMENT_TB D 
+		ON (S.DEPT_CODE=D.DEPT_CODE)
 	</select>
 	<select id="deptCodeView" parameterType="string" resultType="map">
 		SELECT * FROM HD_DEPARTMENT_TB
@@ -204,6 +209,13 @@
 		SELECT C.PROF_ID,C.SUB_CODE,C.OPEN_YN,S.SUB_NAME,S.SUB_ROOM,S.SUB_TIME,P.PROF_NAME,P.PHONE,P.EMAIL 
 		FROM HD_CLASS_TB C JOIN HD_SUBJECT_TB S ON C.SUB_SEQ=S.SUB_SEQ JOIN HD_PROFESSOR_TB P ON C.PROF_ID=P.PROF_ID 
 		WHERE OPEN_YN='Y' AND P.PROF_ID=#{profId}
+	</select>
+	
+	<select id="selectDeptNameOne" parameterType="string" resultType="string">
+		SELECT D.DEPT_NAME
+		FROM (SELECT PROF_ID, DEPT_CODE FROM HD_PROFESSOR_TB WHERE PROF_ID=#{profId}) P
+		JOIN HD_DEPARTMENT_TB D
+		ON (P.DEPT_CODE=D.DEPT_CODE)
 	</select>
  
 <resultMap id="planBoardMap" type="com.kh.finalProject.professor.model.vo.PlanBoard">

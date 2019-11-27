@@ -31,5 +31,8 @@ public class Student {
 	private String stuImgOriname;
 	private String stuImgRename;
 	private String stuAccount;
+	private String deptName;
+	private String colName;
+	private String profName;
 
 }

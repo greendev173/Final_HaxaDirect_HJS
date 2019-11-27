@@ -16,6 +16,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script> <!-- jsPDF -->
 <script src="${pageContext.request.contextPath }/resources/js/html2canvas.js"></script> <!-- html2canvas -->
 
+<style>
+ /* div {
+ 
+ 	border: 1px solid red;
+ } */
+ 
+ table,tr,td,th {
+ 	cursor:auto;
+ }
+</style>
+
 <div class="main-panel">
 	<div class="content-wrapper">
 <!-- Body section Start -->	
@@ -23,7 +34,7 @@
 			<div class="col-md-12 grid-margin">
 				<div class="d-flex justify-content-between align-items-center">
 					<div>
-						<h4 class="font-weight-bold mb-0">학과별 시간표</h4>
+						<h4 class="font-weight-bold mb-0">${acaYear}년도 ${acaSemester}학기 학과별 시간표</h4>
 					</div>
 					<div>
 						<select id="selectDeptCode" class="form-control">
@@ -37,6 +48,7 @@
 			</div>
 <!-- Main Content start -->	
 
+
 <div class="row">
 <div class="col-10"></div>
 <div class="col-2">
@@ -49,13 +61,14 @@
 	<div class="col-12 grid-margin stretch-card">
 		<div class="card">
 			<div class="card-body">
+			<div class="table-responsive">
 			
 			<div class="gap" style="height:20px;"></div>
 			
 			<div id="ajaxTable">
 			
 			<div class="col-12" style="text-align:center;">
-				<c:forEach items="${schedule }" var="deptName" begin="1" end="2">
+				<c:forEach items="${schedule }" var="deptName" begin="1" end="1">
 					<c:if test="${deptName != null}">
 						<h3>${deptName.DEPT_NAME } 시간표</h3>
 					</c:if>
@@ -182,6 +195,7 @@
 					</tbody>
 				</table>
 			</div>
+		</div>
 		</div>
 	</div>
 </div>

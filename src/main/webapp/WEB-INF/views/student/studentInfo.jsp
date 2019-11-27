@@ -12,9 +12,14 @@
 
 <style>
 tr, td, th {
-	text-align: left;
+	text-align: center;
 	font-size: 13px;
 	cursor: auto;
+}
+
+tr, td, th, input {
+	text-align:center;
+	/* border: 1px solid red; */
 }
 
 input {
@@ -96,8 +101,7 @@ table {
 										disabled /></td>
 									<th>&nbsp;&nbsp;&nbsp;주민등록번호<br>(외국인등록번호)
 									</th>
-									<td><input class="form-control" type="text" value="${student.stuSsn}"
-										style="width: 130px" disabled /></td>
+									<td><input class="form-control" type="text" value="${student.stuSsn}" style="width:100%;" disabled /></td>
 								</tr>
 								<tr>
 									<th>휴대폰번호</th>
@@ -111,8 +115,7 @@ table {
 
 									</select></td>
 									<th>메일주소</th>
-									<td><input class="form-control" type="email" value="${student.stuEmail}"
-										style="width: 200px" style="width:200px" disabled /></td>
+									<td><input class="form-control" type="email" value="${student.stuEmail}" style="width:100%;" disabled /></td>
 								</tr>
 								<tr>
 									<th>입학년월</th>
@@ -133,18 +136,24 @@ table {
 									
 									<th>주소</th>
 									<td><input class="form-control" type="text" value="${student.stuAddr}"
-										style="width: 250px" disabled /></td>
+										 style="width:100%;" disabled /></td>
 								</tr>
 								<tr>
 
 									<th>지도교수</th>
-									<td><input class="form-control" type="text" value="${student.profId}"
-										disabled /></td>
-									<th>학과코드</th>
-									<td><input class="form-control" type="text" value="${student.deptCode}"
-										 disabled /></td>
+									<td>
+										<input class="form-control" type="text" value="${student.profId}" disabled />
+										<input class="form-control" type="text" value="${student.profName} 교수" disabled />
+									</td>
+									<th>학부명<br><br>학과명<br><br>학과코드</th>
+									<td>
+										<input class="form-control" type="text" value="${student.colName}" disabled />
+										<input class="form-control" type="text" value="${student.deptName}" disabled />
+										<input class="form-control" type="text" value="${student.deptCode}" disabled />
+									</td>
 									<th>계좌번호</th>
-									<td><select class="form-control" id="bankName" name="bankName" style="display:inline-block;color:black" disabled>
+									<td style="text-align:center;">
+									<select class="form-control" id="bankName" name="bankName" style="display:inline-block;color:black" disabled>
 											<c:if
 												test="${fn:split(student.stuAccount,'ACCDELIMETER')[0] ne null}">
 												<option
@@ -153,7 +162,6 @@ table {
 											<c:if test="${fn:split(student.stuAccount,'ACCDELIMETER')[0] eq null}">
 												<option value="">은행을 선택하세요</option>
 											</c:if>
-
 
 											<option value="카카오">카카오뱅크</option>
 											<option value="국민">국민은행</option>
@@ -176,11 +184,10 @@ table {
 											</select> 
 											<input class="form-control" type="text" id="AccountName" name="AccountName"
 										value="${fn:split(student.stuAccount,'ACCDELIMETER')[2]}"
-										style="width: 100px;display:inline-block" placeholder="예금주명" disabled/>
-										
+										style="width: 100px; display:inline-block" placeholder="예금주명" disabled/><br>
 										<input class="form-control" type="text" id="AccountNumber" name="AccountNumber"
 										value="${fn:split(student.stuAccount,'ACCDELIMETER')[1]}"
-										style="width: 200px" placeholder="계좌번호" disabled/>
+										 style="width:150px;" placeholder="계좌번호" disabled/>
 										</td>
 								</tr>
 								<tr>
@@ -192,7 +199,7 @@ table {
 									<td><input class="form-control" type="text" value="${student.maxPsbCr}"
 										 disabled /></td>
 									<th>인정학기</th>
-									<td><input class="form-control" type="text" value="${student.conSemester}"
+									<td><input class="form-control" type="text" style="width:100px;" value="${student.conSemester}"
 										 disabled /></td>
 								</tr>
 							</table>
