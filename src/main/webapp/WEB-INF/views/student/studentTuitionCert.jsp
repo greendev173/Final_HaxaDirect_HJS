@@ -249,7 +249,7 @@
 			} %>
 			
 			$("#selectYearSem").on('change', function(){
-				alert(transAcaYearSem(this.value)+" 등록금 납입 증명서 조회");
+				//alert(transAcaYearSem(this.value)+" 등록금 납입 증명서 조회");
 				
 				// aJax 통신으로 해당 학년 학기 선택하기
 				$.ajax({

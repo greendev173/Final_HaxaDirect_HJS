@@ -93,11 +93,11 @@
 					<tr>
 					</tr>
 				      <tr>
-				        <th colspan="11" style="font-size:25px;" class="nanumFont">나의 시간표 조회</th>
+				        <th colspan="11" style="font-size:25px;" class="nanumFont">${acaYear}학년도 ${acaSemester}학기 강의 시간표 조회</th>
 				      </tr>
 				    </thead>
 				<tr>
-				<td style="background-color:#D4F4FA;"><h4>개설년도</h4>
+				<!-- <td style="background-color:#D4F4FA;"><h4>개설년도</h4>
 				<select id="chk_year" name="chk_year" class="form-control form-control-sm nanumFont" style="color:black;">
 					<option value="">전체</option>
 					<option id="thisYear" value=""></option>
@@ -118,7 +118,7 @@
 				<td colspan="2" style="border:0px;">
 				<button type="button" style="font-size:17px;" class="btn btn-outline-primary btn-icon-text nanumFont">조회</button>
 				</td>
-				</tr>
+				</tr> -->
 				</table>
 				<br><br>
 				<table id="timeTable" class="table table-default table-striped" >

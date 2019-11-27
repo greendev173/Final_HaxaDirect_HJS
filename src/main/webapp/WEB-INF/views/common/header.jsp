@@ -292,7 +292,7 @@
             <div class="collapse" id="appeal">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="${path }/prof/viewObjection.hd">성적 이의신청 조회</a></li>
-                <li class="nav-item"> <a class="nav-link" href="${path }/prof/resultObjection.hd">처리 결과 조회</a></li>
+                <%-- <li class="nav-item"> <a class="nav-link" href="${path }/prof/resultObjection.hd">처리 결과 조회</a></li> --%>
               </ul>
             </div>
           </li>
@@ -310,7 +310,7 @@
             <div class="collapse" id="assign">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="${path }/prof/assignmentBoard.hd">과제 등록 게시판</a></li>
-                <li class="nav-item"> <a class="nav-link" href="${path }/prof/viewAssignment.hd">과제 제출현황 조회</a></li>
+                <%-- <li class="nav-item"> <a class="nav-link" href="${path }/prof/viewAssignment.hd">과제 제출현황 조회</a></li> --%>
               </ul>
             </div>
           </li>

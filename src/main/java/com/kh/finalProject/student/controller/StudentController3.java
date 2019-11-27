@@ -357,6 +357,8 @@ public class StudentController3 {
 		List<MySchedule> myScheduleList=service.selectMySchedule(msfi);
 		System.out.println("myScheduleList:"+myScheduleList);
 		
+		model.addAttribute("acaYear", acaYear); // 학생 시간표 넘기기
+		model.addAttribute("acaSemester", acaSemester); // 학생 시간표 넘기기
 		model.addAttribute("myScheduleList", myScheduleList); // 학생 시간표 넘기기
 		
 		return "student/mySchedule";
