@@ -217,7 +217,7 @@
         <ul class="nav">
         <% if(session.getAttribute("loginMember") instanceof Professor){%>
          <div class="sidebar-heading" style="font-size:13px; text-align:center;">
-           <%=((Professor)session.getAttribute("loginMember")).getProfName()%> 교수님<br>환영합니다.
+           <span style="color:royalblue; font-weight:bold;"><%=((Professor)session.getAttribute("loginMember")).getProfName()%> 교수</span>님<br>환영합니다.
          </div>
          
          <!-- 교수정보 -->
@@ -315,8 +315,8 @@
             </div>
           </li>
           <%} else if(session.getAttribute("loginMember") instanceof Student){%>
-          <div class="sidebar-heading">
-             학생
+          <div class="sidebar-heading" style="font-size:13px; text-align:center;">
+	           <span style="color:royalblue; font-weight:bold;"><%=((Student)session.getAttribute("loginMember")).getStuName()%> 학생</span>님<br>환영합니다.
          </div>
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic4" aria-expanded="false" aria-controls="ui-basic4">

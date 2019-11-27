@@ -5,6 +5,8 @@
     pageEncoding="UTF-8"%>
 <%@  taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@  taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap" rel="stylesheet">
 <c:set var="path" value="${pageContext.request.contextPath }"/>
 
 	<jsp:include page = "/WEB-INF/views/common/header.jsp">
@@ -16,7 +18,9 @@
 		@import url('https://fonts.googleapis.com/css?family=Jua&display=swap');
 		
 		.nanumFont {
-			font-family: 'Jua', sans-serif;
+			/* font-family: 'Jua', sans-serif; */
+			font-family: 'Nanum Gothic', sans-serif;
+			font-weight:bold;
 		}
 		
 		.topTable {
@@ -28,7 +32,19 @@
 			font-size: 13px;
 			border:1px solid lightgray;
 			cursor: auto;
-			font-family: 'Jua', sans-serif;
+			/* font-family: 'Jua', sans-serif; */
+			font-family: 'Nanum Gothic', sans-serif;
+			font-weight:bold;
+		}
+		
+		table#timeTable td { 
+			width:120px;
+			text-align:center;
+		}
+		
+		h4, option {
+		 	font-family: 'Nanum Gothic', sans-serif;
+			font-weight:bold;
 		}
 		
 		input{
@@ -82,7 +98,7 @@
 				    </thead>
 				<tr>
 				<td style="background-color:#D4F4FA;"><h4>개설년도</h4>
-				<select id="chk_year" name="chk_year" class="form-control form-control-sm" style="color:black;">
+				<select id="chk_year" name="chk_year" class="form-control form-control-sm nanumFont" style="color:black;">
 					<option value="">전체</option>
 					<option id="thisYear" value=""></option>
 					<option id="year2" value=""></option>
@@ -92,20 +108,20 @@
 				</select>
 				</td>
 				
-				<td style="background-color:#CEFBC9;"><h4>개설학기</h4>
-				<select id="chk_sem" name="chk_sem" class="form-control form-control-sm" style="color:black;">
+				<td style="background-color:#D4F4FA;"><h4>개설학기</h4>
+				<select id="chk_sem" name="chk_sem" class="form-control form-control-sm nanumFont" style="color:black;">
 					<option value="">전체</option>
 					<option value="1">1</option>
 					<option value="2">2</option>
 				</select>
 				</td>
 				<td colspan="2" style="border:0px;">
-				<button type="button" style="font-size:17px;" class="btn btn-outline-primary btn-icon-text">조회</button>
+				<button type="button" style="font-size:17px;" class="btn btn-outline-primary btn-icon-text nanumFont">조회</button>
 				</td>
 				</tr>
 				</table>
 				<br><br>
-				<table class="table table-default table-striped" >
+				<table id="timeTable" class="table table-default table-striped" >
 					<tr>
 					<td class="topTable">교시</td>
 					<td class="topTable">월</td>

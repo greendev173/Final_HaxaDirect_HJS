@@ -110,6 +110,15 @@ function loginTypeCookie(loginType) {
 
 
 $(function(){ // html 페이지가 로드되면
+	
+	var windowWidth=$(window).width();
+	console.log("windowWidth:"+windowWidth);
+	if(windowWidth>990) {
+		$("#containerDiv").css("margin-top", "100px");
+	}else {
+		$("#containerDiv").css("margin-top", "0px");
+	}
+	
 	<%
 		Cookie[] cookies=request.getCookies();
 		String loginType="";
@@ -156,12 +165,22 @@ $(function(){ // html 페이지가 로드되면
    });
 });
 
+$(window).resize(function(){
+	var windowWidth=$(window).width();
+	// console.log("windowWidth:"+windowWidth);
+	if(windowWidth>990) {
+		$("#containerDiv").css("margin-top", "100px");
+	}else {
+		$("#containerDiv").css("margin-top", "0px");
+	}
+});
+
 
 </script>
 
 <style>
 	/* div {
-		border:1px solid black;	
+		border:3px solid green;	
 	} */
    .modal{
       display: none;
@@ -171,10 +190,10 @@ $(function(){ // html 페이지가 로드되면
       top: 0;
       width: 100%;
       height:100%;
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
     
         /* Modal Content/Box */
         .modal-content {
@@ -208,54 +227,60 @@ $(function(){ // html 페이지가 로드되면
 </style>
 
 <body>
-   <div class="middlePage">
-   	  <%-- <div class="page-haeder" style="text-align:center;">
-   	   <img width="70%" src="${path }/resources/images/image/khlogo.jpg">
-   	  </div> --%>
-      <div class="page-header">
-         <h3 class="logo" style="font-weight:bold;">
-            	안녕하세요 KH대학교 종합정보 시스템입니다.
-         </h3>
-      </div>
-      <div class="panel panel-info">
-         <div id="panel-heading" class="panel-heading" style="background-color:rgba(34,174,216);">
-            <h3 class="panel-title">학생 로그인</h3>
-         </div>
-         <div class="panel-body" id="12">
-            <div class="row">
-               <div class="col-md-5">
-                  <div id="login_stu" class="login_stu hvr-bounce-to-right_stu">
-                     <p>학생</p>
-                  </div>
-                  <div id="login_prof" class="login_pro hvr-bounce-to-right_prof">
-                     <p>교수</p>
-                  </div>
-                  <div id="login_emp" class="login_emp hvr-bounce-to-right_emp">
-                     <p>교직원</p>
-                  </div>
-               </div>
-               <div class="col-md-7" style="border-left: 1px solid #ccc; height: 160px">
-               
-                  <form class="form-horizontal" action="${path }/login.hd" method='post'>
-                  	 <input type="hidden" name="loginNo" value="s"/>
-                     <input type="text" name="loginId" placeholder="학번을 입력해주세요" class="form-control input-md">
-                     <input type="password" name="loginPwd" placeholder="비밀번호를 입력해주세요" class="form-control input-md input_pwd">
-                     <div class="spacing">
-                        <span><a href="#" id="idSearchBtn" onclick='idSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>학번 찾기</a></span> /
-                        <span><a href="#" id="pwSearchBtn" onclick="pwSearchModal();" style='color:rgba(34,174,216); font-weight:bold;'>비밀번호 찾기</a></span>
-                         <br />
-                     </div>
-                     <label>
-                        <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1" /> 
-                        <small>아이디 저장</small>
-                     </label>
-                     <input type="submit" class="btn btn-info btn-sm pull-right" style="font-weight:bold;" value="로그인"/>
-                     <button type="button" id="adm_btn" class="btn btn-info btn-sm pull-right adm_btn" style="font-weight:bold;" onclick="enrollStudent();">입학신청</button>
-                  </form>
-               </div>
-            </div>
-         </div>
-      </div>
+	<div id="containerDiv" class="container">
+	   <div class="middlePage">
+	   	  <%-- <div class="page-haeder" style="text-align:center;">
+	   	   <img width="70%" src="${path }/resources/images/image/khlogo.jpg">
+	   	  </div> --%>
+	      <div class="page-header">
+	         <h3 class="logo" style="font-weight:bold;">
+	            	대한한국 최고의 교육기관
+	         </h3>
+	         <h3 class="logo" style="font-weight:bold; margin-top:0px;">
+	            	KH대학교 종합정보 시스템 입니다.
+	         </h3>
+	      </div>
+	      <div class="panel panel-info">
+	         <div id="panel-heading" class="panel-heading" style="background-color:rgba(34,174,216);">
+	            <h3 class="panel-title">학생 로그인</h3>
+	         </div>
+	         <div class="panel-body" id="12">
+	            <div class="row">
+	               <div class="col-md-5">
+	                  <div id="login_stu" class="login_stu hvr-bounce-to-right_stu">
+	                     <p>학생</p>
+	                  </div>
+	                  <div id="login_prof" class="login_pro hvr-bounce-to-right_prof">
+	                     <p>교수</p>
+	                  </div>
+	                  <div id="login_emp" class="login_emp hvr-bounce-to-right_emp">
+	                     <p>교직원</p>
+	                  </div>
+	               </div>
+	               <div class="col-md-7" style="border-left: 1px solid #ccc; height: 160px">
+	               
+	                  <form class="form-horizontal" action="${path }/login.hd" method='post'>
+	                  	 <input type="hidden" name="loginNo" value="s"/>
+	                     <input type="text" name="loginId" placeholder="학번을 입력해주세요" class="form-control input-md">
+	                     <input type="password" name="loginPwd" placeholder="비밀번호를 입력해주세요" class="form-control input-md input_pwd">
+	                     <div class="spacing">
+	                        <span><a href="#" id="idSearchBtn" onclick='idSearchModal();' style='color:rgba(34,174,216); font-weight:bold;'>학번 찾기</a></span> /
+	                        <span><a href="#" id="pwSearchBtn" onclick="pwSearchModal();" style='color:rgba(34,174,216); font-weight:bold;'>비밀번호 찾기</a></span>
+	                         <br />
+	                     </div>
+	                     <label>
+	                        <input type="checkbox" name="checkboxes" id="checkboxes-0" value="1" /> 
+	                        <small>아이디 저장</small>
+	                     </label>
+	                     <input type="submit" class="btn btn-info btn-sm pull-right" style="font-weight:bold;" value="로그인"/>
+	                     <button type="button" id="adm_btn" class="btn btn-info btn-sm pull-right adm_btn" style="font-weight:bold;" onclick="enrollStudent();">입학신청</button>
+	                  </form>
+	               </div>
+	            </div>
+	         </div>
+	      </div>
+	   <!-- </div> -->
+   </div>
    </div>
    
    <!-- 모달창  -->
@@ -323,7 +348,7 @@ $(function(){ // html 페이지가 로드되면
       </form>
       </div>
    </div>   
-</body>
+<!-- </body> -->
 
       <div id="idSearchModal" class="modal">
             <div class="modal-content" style="width:400px;">
@@ -408,7 +433,7 @@ $(function(){ // html 페이지가 로드되면
                </form>   
             </div>
           </div>
-
+</body>
 <script>
    $(function(){
       $("#stuEmail").keyup(function(){
@@ -916,11 +941,7 @@ if (emailVal.match(regExp) != null) {
                 }
             }).open();
         }
-         
-         
-         
+        
 </script>
-
-
 
 </html>

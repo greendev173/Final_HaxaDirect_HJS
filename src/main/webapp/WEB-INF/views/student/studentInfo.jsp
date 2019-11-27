@@ -68,8 +68,8 @@ table {
 										<td colspan="8"></td>
 									</tr>
 									<tr>
-										<th colspan="9" style="font-size: 25px; font-family: arial">${student.stuName}님의
-											기본정보</th>
+										<th colspan="9" style="font-size: 25px; font-family: arial">
+										<span style="color:#86afec; font-weight:bold;">${student.stuName}</span>님의 기본정보</th>
 										<br />
 									</tr>
 								</thead>

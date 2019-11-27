@@ -80,7 +80,10 @@
 			<exclude-mapping path="/stuPwSearch.hd"/>
 			<exclude-mapping path="/stuPwRandom.hd"/>
 			<exclude-mapping path="/stuRandomCheck.hd"/>
-			<exclude-mapping path="/email.do"/>								
+			<exclude-mapping path="/email.do"/>
+			<exclude-mapping path="/stuIdSearch.hd"/>
+			<exclude-mapping path="/stuPwChange.hd"/>
+			<exclude-mapping path="/beforeStudent/enroll.hd"/>												
 			<beans:bean class="com.kh.finalProject.common.interceptor.LoginCheck"/>
 			<!-- 위의 설정은 로그인 안한 상태에서 위의 경로 접근 불가능하게 설정 -->
 		</interceptor>
